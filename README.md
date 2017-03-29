@@ -40,10 +40,13 @@ Localisation
 To add a new language "xx" copy the ./lang/sol2kml_en_utf8.php to ./lang/sol2kml_xx_utf8.php;
 
 Edit the new file and translate to "xx" each second part of the sentences:
-- like $t_string['key'] = 'This is a message withhout any value parameter to display';
-- like $t_string['key2'] = 'This is a message with the value {$a} to display';
+- $t_string['key'] = 'This is a message without any value parameter to display';
+- $t_string['welcome'] = 'Welcome {$a}'; // echo $al->get_string('welcome','Jf44'); output 'Welcome Jf44'
 
 Warning : do not translate the key part !:>))
+
+The {$a} is a token that has to be set up dynamically in the code.
+
 
 Improvements
 ------------
@@ -66,12 +69,13 @@ JF44 : jean.fruitet@free.fr
 Needs
 -----
 A) You need Google Earth to display the KML/KMZ files
+
 B) You need a web server which allows the PHP fonction file_get_contents($url) to collect the data
 directly from the SailOnLine race server and generate the KML / KMZ files.
 
 If you lack of a personneal webserver on the Internet you can set up a local web server to test and produce your own G.E maps
 
-Look at Apachefriends' Xampp for exemple.
+Look at [Apachefriends' Xampp] (https://www.apachefriends.org/) for exemple.
 
 In the case of you own a personnal Web server on the Internet **whith the PHP fonction file_get_contents($SolServerUrl)**
 activated, the visitors of your site may generate their own maps online.
@@ -86,12 +90,12 @@ Usage
 Connect with a Web browser to the URL
 <a href="http://localhost/soltools/solboats2kml.php?lang=en">http://localhost/soltools/solboats2kml.php?lang=en</a>
 
-Choose a race
-Select a scale
-Select a boat model
-Click the yellow "Validate" button...
-Wait a while... Two KMZ and one KML files are produced.
-Open one of them with G.E.
+ 1. Choose a race
+ 2. Select a scale
+ 3. Select a boat model
+ 4. Click the yellow "Validate" button...
+ 5. Wait a while... Two KMZ and one KML files are produced.
+ 6. Open one of them with G.E.
 
 
 That's all folks.
