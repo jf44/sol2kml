@@ -35,18 +35,6 @@ The sails (jib, genois, gennaker or spinnaker) are deduced from TWA (if greater 
 The scale determines the size of the boats on the map.
 Set scale to 0.1 (or less) for narrows, 0.5 for coastal races, 2 to 15 for transocean races.
 
-Improvements of that version :
-- localisation (fr, en).
-- getting Grib, Polar, Marks, Tracks
-- setting TWD, TWS, TWA, SOG from grib and polars
-- computation of boat roll and tilt from TWS / TWA and the right sail (jib, genois, gennaker, spi)
-- tour of the fleet
-- monohull or multihull (trimaran)
-
-Next improvements
-- choose boats to display
-- new boats like catamarans, iceboats, etc.
-
 Localisation
 ------------
 To add a new language "xx" copy the ./lang/sol2kml_en_utf8.php to ./lang/sol2kml_xx_utf8.php;
@@ -59,6 +47,18 @@ Warning : do not translate the key part !:>))
 
 Improvements
 ------------
+Improvements of that version :
+- localisation (fr, en).
+- getting Grib, Polar, Marks, Tracks
+- setting TWD, TWS, TWA, SOG from grib and polars
+- computation of boat roll and tilt from TWS / TWA and the right sail (jib, genois, gennaker, spi)
+- tour of the fleet
+- monohull or multihull (trimaran)
+
+Next improvements
+- choose boats to display
+- new boats like catamarans, iceboats, etc.
+
 If you like to get others improvements send me a mail.
 
 JF44 : jean.fruitet@free.fr
@@ -69,10 +69,11 @@ A) You need Google Earth to display the KML/KMZ files
 B) You need a web server which allows the PHP fonction file_get_contents($url) to collect the data
 directly from the SailOnLine race server and generate the KML / KMZ files.
 
-So you have to set up a local web server to test and produce your own G.E maps.
+If you lack of a personneal webserver on the Internet you can set up a local web server to test and produce your own G.E maps
+
 Look at Apachefriends' Xampp for exemple.
 
-But in the case of you own a personnal Web server on the Internet whith the PHP fonction file_get_contents($SolServerUrl)
+In the case of you own a personnal Web server on the Internet **whith the PHP fonction file_get_contents($SolServerUrl)**
 activated, the visitors of your site may generate their own maps online.
 
 Installation
