@@ -1,0 +1,149 @@
+body, table, tr, td, p, li, a
+{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt
+}
+
+
+h1
+{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : x-large;
+	font-weight : normal;
+	font-style : bold;
+	color : Blue;
+	text-align : center
+}
+
+h2
+{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: large;
+	font-weight : normal;
+	font-style : bold;
+	color : Navy;
+}
+
+h3
+{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: large;
+	font-weight : normal;
+	font-style : normal;
+	color : Navy;
+}
+
+h4
+{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: medium;
+	font-weight : normal;
+	font-style : bold;
+	color : Navy;
+}
+
+h5  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : small;
+	font-weight : bold;
+	font-style : italic;
+	color : Navy;
+}
+
+h6  {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size : x-small;
+	font-weight : normal;
+	font-style : normal;
+	color : Navy;
+}
+
+a:link
+{
+	text-decoration: none;
+	color: #3300aa
+}
+
+a:visited, active
+{
+	text-decoration: none;
+	color: #3300aa
+}
+
+
+
+a:hover
+{
+	text-decoration: underline;
+	color: #7700cc
+}
+
+
+a.small:link {
+	text-decoration: none;
+	color: #3300aa;
+	font-size: 8pt;
+}
+
+a.small:visited, active {
+	text-decoration: none;
+	color: #3300aa;
+	font-size: 8pt;
+}
+
+a.small:hover
+{
+	text-decoration: underline;
+	color: #7700cc;
+    font-size: 8pt;
+}
+
+
+div {
+		font-size : smaller;
+		text-align: right;
+}
+
+span.rouge {
+	color : Yellow;
+	background-color  : Red;
+}
+
+span.surligne {
+	color: Navy;
+   	background-color : Yellow;
+}
+
+span.small {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+}
+
+td.small {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+}
+
+td.petole {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	background-color : #aabbff;
+}
+
+td.medium {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	background-color : #ffffbb;
+}
+
+td.fort {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	background-color : #ff77bb;
+}
+
+td.tempete {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	background-color : #ee9955;
+}
