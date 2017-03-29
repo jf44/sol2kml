@@ -108,6 +108,8 @@ if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
 $url_serveur = $uri.$_SERVER['HTTP_HOST'].get_url_pere($_SERVER['SCRIPT_NAME']);
 $url_serveur_local = $uri.$_SERVER['HTTP_HOST'].get_url_pere($_SERVER['SCRIPT_NAME']);
 $dir_serveur = dirname($_SERVER['SCRIPT_FILENAME']);
+// Nom du script chargé dynamiquement.
+$phpscript=substr($_SERVER["PHP_SELF"], strrpos($_SERVER["PHP_SELF"],'/')+1);
 $appli=$uri.$_SERVER['HTTP_HOST'].$_SERVER["PHP_SELF"];
 
 // COOKIES INPUT
@@ -127,7 +129,7 @@ if (isset($_GET['racenumber'])){
 	$racenumber=$_GET['racenumber'];
 }
 if (isset($_GET['token'])){
-	$token=$_GET['$token'];
+	$token=$_GET['token'];
 }
 
 // POST
@@ -772,17 +774,20 @@ function entete(){
 ';
 echo '<p align="center">
 ';
-foreach ($tlanglist as $alang){
-	if ($alang==$lang){
-		echo '<b>'.$al->get_string($alang).'</b> ';
-	}
-	else{
-		echo '<a href="'.$appli.'?lang='.$alang.'&racenumber='.$racenumber.'">'.$al->get_string($alang).'</a> ';
+if (!empty($tlanglist)){
+	foreach ($tlanglist as $alang){
+		if ($alang==$lang){
+			echo ' <b>'.$al->get_string($alang).'</b> &nbsp; - ';
+		}
+		else{
+			echo '<a href="'.$appli.'?lang='.$alang.'&racenumber='.$racenumber.'">'.$al->get_string($alang).'</a> &nbsp; - ';
+		}
 	}
 }
-echo ' -
-(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc-by sa</a>) <a href="mailto:jean.fruitet@free.fr">JF</a></p>
-</div>
+
+onelinemenu();
+
+echo '</div>
 <div id="menugauche">
 
 <h4>'.$al->get_string('serverconnect').'</h4>
@@ -840,9 +845,12 @@ displayPage();
 function enqueue(){
 global $version;
 echo '
-<div id="piedpage">Version '.$version.' (<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc - by sa</a>) JF 2016-2017</div>
+<div id="piedpage">
+Version '.$version.' (<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc - by sa</a>) <a href="mailto:jean.fruitet@free.fr">JF</a> 2016-2017  &nbsp;
+</div>
 </body>
-</html>';
+</html>
+';
 }
 
 // ----------------------------
@@ -1064,6 +1072,31 @@ echo '<br /> '.$al->get_string('barbsize').' :
 </form>
 ';
 }
+
+
+//---------------
+function onelinemenu(){
+global $phpscript;
+global $lang;
+global $racenumber;
+global $token;
+	// DEBUG
+	// echo " '$phpscript' ";
+	if (!empty($phpscript)){
+		switch ($phpscript)  {
+			case 'sol_my_boat.php' :
+				echo ' <b>SolMyBoat</b> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+			break;
+			case 'solboats2kml.php' :
+				echo '  <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <b>SolBoatsToKml</b> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+			break;
+			default :
+            	echo '  <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <b>SolToGrib</b>'."\n";
+            break;
+		}
+	}
+}
+
 
 //------------------------
 function creer_dossier_kml(){

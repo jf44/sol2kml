@@ -62,6 +62,7 @@ $dir_serveur = dirname($_SERVER['SCRIPT_FILENAME']);
 // DEBUG
 //echo "<br>Répertoire serveur : $dir_serveur<br />\n";
 // Nom du script chargé dynamiquement.
+$phpscript=substr($_SERVER["PHP_SELF"], strrpos($_SERVER["PHP_SELF"],'/')+1);
 $appli=$uri.$_SERVER['HTTP_HOST'].$_SERVER["PHP_SELF"];
 //echo $appli;
 //exit;
@@ -94,11 +95,11 @@ if (isset($_GET['racenumber'])){
 }
 
 if (isset($_GET['racename'])){
-	$racename=$_GET['$racename'];
+	$racename=$_GET['racename'];
 }
 
 if (isset($_GET['token'])){
-	$token=$_GET['$token'];
+	$token=$_GET['token'];
 }
 
 
@@ -246,49 +247,42 @@ function entete(){
 	echo '<!DOCTYPE html>
 <html  dir="ltr" lang="fr" xml:lang="fr">
 <head>
-	<title>Sailonline Feed for Google Earth</title>
+	<title>Sailonline :: My Boat</title>
 	<meta name="ROBOTS" content="none,noarchive">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="Author" content="JF">
-	<meta name="description" content="SailOnLine races to G.E."/>
+	<meta name="description" content="SailOnLine races"/>
     <link rel="author" title="Auteur" href="mailto:jean.fruitet@free.fr">
 	<link href="style2.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 ';
-/*
-$t_string['titlelogin'] ='Bonjour invité. Identifiez-vous pour récupérer votre  token personnel de la course';
-$t_string['login'] ='Username';
-$t_string['passwd'] ='Password';
-$t_string['login_help1'] ='Votre mot de passe n\'est pas enregistré sur ce serveur.';
-$t_string['login_help2'] ='Vous pouvez aussi plutôt fournir votre token pour la course.';
-
-*/
-
+echo '<div id="bandeau">
+';
 if (!empty($login)){
-    $guest=$login;
+    echo '<h1 align="center">'.$al->get_string('titlemyboat', $login).'</h1>'."\n";
 }
 else{
-    $guest=$al->get_string('guest');
+    echo '<h1 align="center">'.$al->get_string('welcome',$al->get_string('guest')).'. - '.$al->get_string('titlelogin').'</h1>
+';
 }
 
-echo '<div id="bandeau">
-<h1 align="center">'.$al->get_string('welcome',$guest).'. '.$al->get_string('titlelogin').'</h1>
-';
 echo '<p align="center">
 ';
-foreach ($tlanglist as $alang){
-	if ($alang==$lang){
-		echo '<b>'.$al->get_string($alang).'</b> ';
-	}
-	else{
-		echo '<a href="'.$appli.'?lang='.$alang.'&racenumber='.$racenumber.'">'.$al->get_string($alang).'</a> ';
+if (!empty($tlanglist)){
+	foreach ($tlanglist as $alang){
+		if ($alang==$lang){
+			echo ' <b>'.$al->get_string($alang).'</b> &nbsp; - ';
+		}
+		else{
+			echo '<a href="'.$appli.'?lang='.$alang.'&racenumber='.$racenumber.'">'.$al->get_string($alang).'</a> &nbsp; - ';
+		}
 	}
 }
 
-echo ' -
-(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc-by sa</a>) <a href="mailto:jean.fruitet@free.fr">JF</a></p>
-</div>
+onelinemenu();
+
+echo '</div>
 <div id="menugauche">
 
 <h4>'.$al->get_string('serverconnect').'</h4>
@@ -360,15 +354,35 @@ function enqueue(){
 global $version;
 echo '
 <div id="piedpage">
-
-Version '.$version.' (<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc - by sa</a>) JF 2016-2017
-
+Version '.$version.' (<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc - by sa</a>) <a href="mailto:jean.fruitet@free.fr">JF</a> 2016-2017 &nbsp;
 </div>
 </body>
 </html>
 ';
 }
 
+//---------------
+function onelinemenu(){
+global $phpscript;
+global $lang;
+global $racenumber;
+global $token;
+	// DEBUG
+	// echo " '$phpscript' ";
+	if (!empty($phpscript)){
+		switch ($phpscript)  {
+			case 'sol_my_boat.php' :
+				echo ' <b>SolMyBoat</b> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+			break;
+			case 'solboats2kml.php' :
+				echo '  <a href="sol_my_boat?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <b>SolBoatsToKml</b> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+			break;
+			default :
+            	echo '  <a href="sol_my_boat?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <b>SolToGrib</b>'."\n";
+            break;
+		}
+	}
+}
 
 // ----------------------------
 function get_url_pere($path) {

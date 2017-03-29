@@ -123,6 +123,7 @@ $dir_serveur = dirname($_SERVER['SCRIPT_FILENAME']);
 // DEBUG
 // echo "<br>Répertoire serveur : $dir_serveur\n";
 // Nom du script chargé dynamiquement.
+$phpscript=substr($_SERVER["PHP_SELF"], strrpos($_SERVER["PHP_SELF"],'/')+1);
 $appli=$uri.$_SERVER['HTTP_HOST'].$_SERVER["PHP_SELF"];
 
 // heure    minute seconde jour mois annee
@@ -178,14 +179,13 @@ if (isset($_GET['filename'])){
 if (isset($_GET['racenumber'])){
 	$racenumber=$_GET['racenumber'];
 }
-/*
+
 if (isset($_GET['racename'])){
-	$racename=$_GET['$racename'];
+	$racename=$_GET['racename'];
 }
-*/
 
 if (isset($_GET['token'])){
-	$token=$_GET['$token'];
+	$token=$_GET['token'];
 }
 
 // POST
@@ -973,20 +973,23 @@ function entete(){
 <div id="bandeau">
 <h1 align="center">'.$al->get_string('title1').'</h1>
 ';
+
 echo '<p align="center">
 ';
-foreach ($tlanglist as $alang){
-	if ($alang==$lang){
-		echo '<b>'.$al->get_string($alang).'</b> ';
-	}
-	else{
-		echo '<a href="'.$appli.'?lang='.$alang.'&racenumber='.$racenumber.'">'.$al->get_string($alang).'</a> ';
+if (!empty($tlanglist)){
+	foreach ($tlanglist as $alang){
+		if ($alang==$lang){
+			echo ' <b>'.$al->get_string($alang).'</b> &nbsp; - ';
+		}
+		else{
+			echo '<a href="'.$appli.'?lang='.$alang.'&racenumber='.$racenumber.'">'.$al->get_string($alang).'</a> &nbsp; - ';
+		}
 	}
 }
 
-echo ' -
-(<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc-by sa</a>) <a href="mailto:jean.fruitet@free.fr">JF</a></p>
-</div>
+onelinemenu();
+
+echo '</div>
 <div id="menugauche">
 
 <h4>'.$al->get_string('serverconnect').'</h4>
@@ -1276,6 +1279,28 @@ global $al;
 ';
 }
 
+//---------------
+function onelinemenu(){
+global $phpscript;
+global $lang;
+global $racenumber;
+global $token;
+	// DEBUG
+	// echo " '$phpscript' ";
+	if (!empty($phpscript)){
+		switch ($phpscript)  {
+			case 'sol_my_boat.php' :
+				echo ' <b>SolMyBoat</b> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+			break;
+			case 'solboats2kml.php' :
+				echo '  <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <b>SolBoatsToKml</b> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+			break;
+			default :
+            	echo '  <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <b>SolToGrib</b>'."\n";
+            break;
+		}
+	}
+}
 
 
 // ------------------

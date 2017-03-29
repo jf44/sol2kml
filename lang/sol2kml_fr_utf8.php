@@ -126,6 +126,7 @@ $t_string['selectfriends'] ='Sélectionner les bateaux à afficher';
 $t_string['guest'] ='invité';
 $t_string['welcome'] ='Bienvenue {$a}';
 $t_string['titlelogin'] ='Connectez-vous pour récupérer votre token personnel sur la course.';
+$t_string['titlemyboat'] ='Position de {$a} sur SailOnLine.';
 $t_string['login'] ='Nom utilisateur';
 $t_string['passwd'] ='Mot de passe';
 $t_string['login_help1'] ='Aucun mot de passe n\'est enregistré sur ce serveur.';

@@ -118,6 +118,7 @@ $t_string['selectfriends'] ='Select the boats to display';
 $t_string['guest'] ='guest';
 $t_string['welcome'] ='Welcome {$a}';
 $t_string['titlelogin'] ='Please login to your sailonline boat to get your own race token.';
+$t_string['titlemyboat'] ='Position of {$a} on SailOnLine.';
 $t_string['login'] ='Username';
 $t_string['passwd'] ='Password';
 $t_string['login_help1'] ='Your pass will not been recorded on this server.';
