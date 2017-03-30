@@ -4,8 +4,8 @@
 // Connexion à la curse avec son propre identifiant
 // Retouorne un token valide
 
-define ('DEBUG', 0);      // debogage maison !:))
-//define ('DEBUG', 1);
+//define ('DEBUG', 0);      // debogage maison !:))
+define ('DEBUG', 1);
 define ('DEBUG2', 0);
 require_once("./lang/GetStringClass.php"); // localisation
 require_once("./sol_include/sol_config.php");
@@ -204,6 +204,11 @@ if (!empty($token)){
 		echo $date=date("Y/m/d H:i:s T",$timestamp) . "<br />\n";
 		date_default_timezone_set('UTC');
 		echo $date=date("Y/m/d H:i:s T",$timestamp) . "<br>\n";
+		if (DEBUG){
+				echo '<br /><pre>'."\n";
+				print_r(htmlentities($boatdata));
+		    	echo '</pre>'."\n";
+		}
 
         if ($boat_xml = new SimpleXMLElement($boatdata)){
 			if (DEBUG){

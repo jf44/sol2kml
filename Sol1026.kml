@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+  <Folder>
+	<name>Click to the map</name>
+    <NetworkLink>
+      <refreshVisibility>0</refreshVisibility>
+      <flyToView>1</flyToView>
+      <Link>
+        <href>http://localhost:8080/soltools/sol3d/Sol1026_cache3D.kml</href>
+        <refreshInterval>1800</refreshInterval>
+        <viewRefreshMode>onRequest</viewRefreshMode>
+      </Link>
+    </NetworkLink>
+  </Folder>
+</kml>
