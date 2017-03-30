@@ -379,7 +379,7 @@ if ($action==$al->get_string('validate')){
     	    	echo '</pre>'."\n";
 			}
 			afficheMarques($t_wp);
-            echo "<br /><b>'.$al->get_string('boat').'</b>: ".$marques_xml->boat->type."<br />\n";
+            echo '<br /><b>'.$al->get_string('boat').'</b>: '.$marques_xml->boat->type.'<br />'."\n";
   			flush();
 
 			// Polaires
@@ -395,7 +395,7 @@ if ($action==$al->get_string('validate')){
     	    	echo '</pre>'."\n";
 			}
             $t_polaires = getPolaires($polaires);
-            echo "<br />'.$al->get_string('polars').' ".$polaires->name." '.$al->get_string('loaded').'<br />\n";
+            echo '<br />'.$al->get_string('polars').' '.$polaires->name.' '.$al->get_string('loaded').'<br />'."\n";
             if (false){
 				affichePolaires($polaires->name, $t_polaires);
 			}
