@@ -242,10 +242,10 @@ define ('DEBUGCONNECT', 0);      // home made debug maison !:))
 ';
 			foreach  ($t_races as $race){
 				if ($racenumber==$race->id){
-					echo '<option value="'.$race->id.'#§#'.$race->name.'" SELECTED>'.$race->name.' (<i>'.$race->id.'</i>)</option>';
+					echo '<option value="'.$race->id.'#§#'.$race->name.'" SELECTED>'.substr($race->name,0,45).' (<i>'.$race->id.'</i>)</option>';
 				}
                 else{
-					echo '<option value="'.$race->id.'#§#'.$race->name.'">'.$race->name.' ('.$race->id.')</option>';
+					echo '<option value="'.$race->id.'#§#'.$race->name.'">'.substr($race->name,0,45).' ('.$race->id.')</option>';
 				}
 			}
 		echo '

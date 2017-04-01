@@ -7,7 +7,7 @@ require_once('include/pclzip/pclzip.lib.php');
 function ajouter_fichier_zip($dest_path, $fichier_in, $zip_name ){
 // ajoute le fichier $fichier_in à l'archive $zip_name en retirant le chemin $dest_path
         // DEBUG
-        // echo "<br>DEBUG :: $dest_path, $fichier_in, $zip_name \n";
+        //echo "<br />DEBUG :: include/zip.php :: 10 ::<br />DEST_PATH: '$dest_path', FICHIER_IN: '$fichier_in', ZIP_NAME: '$zip_name' \n";
         $archive = new PclZip($zip_name);
 		if ( $archive->add($dest_path.'/'.$fichier_in,
                           PCLZIP_OPT_REMOVE_PATH, $dest_path) == 0) {
@@ -18,10 +18,14 @@ function ajouter_fichier_zip($dest_path, $fichier_in, $zip_name ){
 
 // ----------------
 function creer_fichier_zip($dest_path, $t_fichier_in, $zip_name ){
-// cree une archive $zip_name avec le contenu du $fichier_in (qui peut être un dossier)
-// en supprimant le chemin $dest_path
+// cree une archive $zip_name avec le contenu du $t_fichier_in (qui peut être un dossier)
+// en supprimant le chemin $dest_path dans le nom du fichier créé
+// Le fichier zip est céé dans le dossier appelant.
+// Il faudra ensuite le déplacer dans le dossier cible
         // DEBUG
-        // echo "<br>DEBUG :: $dest_path, $fichier_in, $zip_name \n";
+        //echo "<br />DEBUG :: include/zip.php :: 24 ::<br />DEST_PATH: '$dest_path'<br />FICHIER_IN: <br />\n";
+		//print_r($t_fichier_in);
+		//echo "<br />, ZIP_NAME: '$zip_name' \n";
         $archive = new PclZip($zip_name);
 		if ($dest_path!=''){
 			if ($archive->create($t_fichier_in,

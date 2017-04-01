@@ -14,12 +14,13 @@ define ('DEBUG', 0);      // debogage maison !:))
 //define ('DEBUG', 1);
 define ('DEBUG2', 0);       //  debogage maison !:))
 
-require_once("./lang/GetStringClass.php"); // pour le fonction de manipulation de chaines
-require_once("./sol_include/sol_config.php"); // utilitaires de connexion au serveur SOL
+require_once('lang/GetStringClass.php'); // pour le fonction de manipulation de chaines
+require_once('sol_include/sol_config.php'); // utilitaires de connexion au serveur SOL
+require_once('include/utils.php'); // utilitaires divers
 
 // Gestion des Grib et des traces
-require_once("./include/GribClass.php"); // pour le fonction de manipulation de grib
-require_once("./include/Trace.php"); // Pour les trajectoires
+require_once('include/GribClass.php'); // pour le fonction de manipulation de grib
+require_once('include/Trace.php'); // Pour les trajectoires
 
 // Gestion des fichiers KML / KMZ
 require_once('include/zip.php'); // utilise la bibliotheque pclzip
@@ -30,6 +31,7 @@ require_once('include/kml_trajectoire.php'); // Génération KML de la trajectoi
 require_once('include/kml_3d.php'); // Génération KML des bateaux comme des modeles 3D
 require_once('include/text2image.php'); // Creation d'overlay avec le nom de la course sur G.E.
 
+$archive = true; // Les ficiers créés sot archivés sous forme kmz
 $version="0.7-20170325";
 $lang='fr'; // par defaut
 $module='sol2kml'; // pour charger le bon fichier de langue !
@@ -82,6 +84,8 @@ $t_grib = array();
 $scale=2;		// valeur d'echelle des voiliers 3D par defaut
 $mode='3D'; // affichage 3D des bateau par défaut
 $ok3d=true;
+$dossier_kml='kml';
+$dossier_kmz='kmz';
 $dossier_3d='sol3d';
 $dossier_3d_cache=$dossier_3d; // initialise avec la date par un appel de fonction
 $extension_dae='.dae'; // fichier COLLADA
@@ -151,11 +155,11 @@ $url_serveur=$url_serveur_local; // par defaut le serveur sur lequel s'exécute 
 $url_serveur_marques_parcours=$url_serveur;
 
 // COOKIES INPUT
-/*
+
 if (isset($_COOKIE["sollang"]) && !empty($_COOKIE["sollang"])){
 	$lang=$_COOKIE["sollang"];
 }
-*/
+
 if (isset($_COOKIE["solracenumber"]) && !empty($_COOKIE["solracenumber"])){
 	$racenumber=$_COOKIE["solracenumber"];
 }
@@ -278,12 +282,10 @@ if (isset($racenumber) && ($racenumber!="") ){
 	setcookie("solracenumber", $racenumber);
 }
 
-
-/*
 if (isset($lang) && ($lang!="") ){
 	setcookie("sollang", $lang);
 }
-*/
+
 
 
 $al= new GetString();
@@ -336,7 +338,8 @@ echo '
 ';
 menu();
 echo '</div>
-<div id="console"><h4>'.$al->get_string('process').'</h4>
+<div id="console">
+<h4>'.$al->get_string('process').'</h4>
 ';
 if ($action==$al->get_string('validate')){
 	// Fichier de marques et polaires
@@ -486,6 +489,8 @@ if ($action==$al->get_string('validate')){
 							echo '<br />'.$al->get_string('grib').'<pre>'."\n";
 							print_r($g_at);
     	    				echo '</pre>'."\n";
+							//echo 'EXIT :: SolBoats2Kml :: 491'."\n";
+       						//exit;
 						}
 
 						foreach ($grib_xml->frames->frame as $frame_xml){
@@ -508,7 +513,7 @@ if ($action==$al->get_string('validate')){
 							$t_grib[] = $g_frame;
 						}
 						//
-                   // DEBUG2
+                   	// DEBUG2
                 		if (DEBUG2){
 							echo '<br />'.$al->get_string('meteo').': '.count($t_grib).' '.$al->get_string('nbrec').'<br /><pre>'."\n";
 							print_r($t_grib);
@@ -517,12 +522,13 @@ if ($action==$al->get_string('validate')){
 							//exit;
 						}
 
-                        $timestamp_min=$timestamp-3600; // Une heure dans le passé
-        				$timestamp_max=$timestamp+2*3600; // Deux heures dans le futur
+                        $timestamp_min=$timestamp-3*3600; // Trois heures dans le passé
+        				$timestamp_max=$timestamp+6*3600; // Deux heures dans le futur
 
                         $uneGrib = new Grib();
-						$uneGrib->setGrib_complete($g_at, $t_grib); // ne conserver que la fen^tre temporelle courante
-                        //$uneGrib->setGrib($g_at, $t_grib, $timestamp_min, $timestamp_max); // ne conserver que la fen^tre temporelle courante
+						// $uneGrib->setGrib_complete($g_at, $t_grib);
+						// ne conserver que la fen^tre temporelle courante
+                        $uneGrib->setGrib($g_at, $t_grib, $timestamp_min, $timestamp_max); // ne conserver que la fen^tre temporelle courante
 						// verification
                    		if (DEBUG2){
 							echo '<br />'.$al->get_string('meteo').'<pre>'."\n";
@@ -693,9 +699,11 @@ if ($action==$al->get_string('validate')){
 					);
                     $un_voilier->setVoile();
                 	$t_voilier[] = $un_voilier;
-					echo $aboat_xml->name.', ';
-                    // echo '<br />'.$al->get_string('gite').": \n";
-					// print_r($un_voilier->GiteVoilier(true));
+					if (false){
+						echo $aboat_xml->name.', ';
+                    	// echo '<br />'.$al->get_string('gite').": \n";
+						// print_r($un_voilier->GiteVoilier(true));
+					}
                 	flush();
 					$n++;
 				}
@@ -716,7 +724,7 @@ if ($n){
 
 	usort($t_voilier, "callback_rank_compare");
 
-	if (false){
+	if (DEBUG2){
 		echo '<br />DEBUG :: 720 <br /><span class="surligne"><b>'.$n.'</b> '.$al->get_string('boatloaded').'</span><br />'."\n";
 		echo '<br /><pre>'."\n";
 		echo print_r($t_voilier);
@@ -731,22 +739,22 @@ echo '</div>
 ';
 
 //  Génération des données pour G.E.
-echo '<div id="display1">
-<h4>'.$al->get_string('fileexported').'</h4>
-';
+echo '<div id="display1">'."\n";
+
+//echo '<h4>'.$al->get_string('fileexported').'</h4>'."\n";
 if (!empty($t_voilier)){
 	echo '<h4>'.$al->get_string('newmap').'</h4>'."\n";
-	echo $al->get_string('wait')."\n";
+	// echo $al->get_string('wait')."\n";
 	flush();
 
  	// Structure d'accueil pour les données
-	creer_dossier_kml();
+	creer_dossier_kml($archive);
 	if ($mode=='3D'){ // 3D systématiquement
 		if (isset($t_voilier) && is_array($t_voilier) && (count($t_voilier)>0) ){
-			echo '<p>'.$al->get_string('export1');
-			flush();
+			//echo '<p>'.$al->get_string('export1');
+			//flush();
             $nom_course="$racename ($racenumber) - ".date("Y/m/d H:i:s T",$timestamp);
-            $un_cartouche = new Cartouche($racenumber, $nom_course, "images", 'Ebrima', '28', 'ffdd00');
+            $un_cartouche = new Cartouche($racenumber, $nom_course, "images", 'Ebrima', '28', 'aa9900');
             $image_nom_course=$un_cartouche->setTextImage();
 			if (DEBUG){
 				echo "<br />L'image $image_nom_course est créée.\n";
@@ -759,14 +767,14 @@ if (!empty($t_voilier)){
 			$s.=GenereMarquesParcoursEtDebutPositionsBateauxKML_3D($scale, $okmarques);
 			$i=0;
 			while ($i<count($t_voilier)){
-				$s.=GenereBateauKML_3D($dossier_3d, $url_serveur, $t_voilier[$i], $scale, $scale*150);
+				$s.=GenereBateauKML_3D($dossier_kml.'/'.$dossier_3d, $url_serveur, $t_voilier[$i], $scale, $scale*150);
 				$i++;
 			}
             $s.=GenereTourBateauxKML($t_voilier, $scale);  // génère la visite guidée  du premier au dernier.
 			$s.=GenereEnQueueKML_3D();
 
 			// fichier KML chargé dynamiquement
-			EnregistreKML_3D($dossier_3d, $s, false, false);
+			EnregistreKML_3D($dossier_3d, $s, false, $al);
 			GenereKML_3D($dossier_3d, $url_serveur, $t_voilier[0]->longitude, $t_voilier[0]->latitude, $t_voilier[0]->cog); // Fichier kml a appeler depuis GoogleEarth
 
 			// donnees d'archives : adressage relatif
@@ -774,13 +782,13 @@ if (!empty($t_voilier)){
 			$s.=GenereMarquesParcoursEtDebutPositionsBateauxKML_3D($scale, $okmarques);
 			$i=0;
 			while ($i<count($t_voilier)){
-				$s.=GenereBateauKML_3D($dossier_3d_cache, "", $t_voilier[$i], $scale, $scale*150);
+				$s.=GenereBateauKML_3D($dossier_kml.'/'.$dossier_3d_cache, "", $t_voilier[$i], $scale, $scale*150);
 				$i++;
 			}
             // Visite guidée
     		$s.=GenereTourBateauxKML($t_voilier, $scale);
 			$s.=GenereEnQueueKML_3D();
-			EnregistreKML_3D($dossier_3d_cache, $s, true, false);
+			EnregistreKML_3D($dossier_3d_cache, $s, true, $al);
             // DEBUG
    			if (DEBUG){
 				echo "<pre>\n";
@@ -788,68 +796,52 @@ if (!empty($t_voilier)){
 				echo "</pre>\n";
 				flush();
 			}
-			echo '<br />'.$al->get_string('export2')."\n";
+			// echo '<br />'.$al->get_string('export2')."\n";
 
 			unset($t_voilier);
 		}
 	}
 }
-echo '</div>
-';
+//echo '</div>'."\n";
+
 // Archives
 
-echo '<div id="display2">
-';
-echo '<h4>'.$al->get_string('mapready').'</h4>
-';
-	/*
-	if (file_exists($dir_serveur.'/'.$fichier_kml_courant.$extension_kml)){
-		echo '<p align="center"><span class="surligne"/>Vous pouvez télécharger et afficher dans  Google Earth &reg; le fichier <a href="'.$fichier_kml_courant.$extension_kml.'"/><b>'.$fichier_kml_courant.$extension_kml.'</b></a></span>'."\n";
-	}
+// afficheArchivesKML();
+if ($datatodisplay=verifieArchivesKML()){
+	echo '<p><span class="small">'.$al->get_string('info1').'<br /><i>'.$al->get_string('info2').'</i></span></p>'."\n";
 
-	echo '<p align="center"><span class="surligne"/>Vous pouvez lire dans Google Earth &reg; les fichiers KML / KMZ</span>
+	echo '
+<h4>'.$al->get_string('mapready').'</h4>
 ';
-*/
-	afficheArchivesKML();
-	/*
-    echo '<div id="divrkml">
-<script type="text/javascript">
-displayRacekml();
-</script>
-</div>
-';
-*/
-echo '
+
+    displayArchivesKML($datatodisplay);
+	if ($datatodisplay->nkml){
+		echo '
 <button id="rollButtonkml" type="button" onclick="rollKml()">++KML</button>
 ';
-echo '<div id="divkml">
+		echo '<div id="divkml">
 <script type="text/javascript">
 displayPagekml();
 </script>
 </div>
 ';
-/*
-    echo '<div id="divrkmz">
-<script type="text/javascript">
-displayRacekmz();
-</script>
-</div>
-';
-*/
+	}
 
-echo '
+	if ($datatodisplay->nkmz){
+		echo '
 <button id="rollButtonkmz" type="button" onclick="rollKmz()">++KMZ</button>
 ';
-echo '<div id="divkmz">
+		echo '<div id="divkmz">
 <script type="text/javascript">
 displayPagekmz();
 </script>
 </div>
 ';
+	}
 
+	echo '</div>'."\n";
+}
 
-echo '</div>
-';
 $nom_kml=ExisteKML($mode); // Gestion du cache temporel
 
 enqueue();
@@ -861,8 +853,6 @@ enqueue();
 function selectFichier($racenumber, $path, $prefix, $extension){
 global $appli;
 global $nobj;
-global $max_ligne;
-global $ligne;
 global $al;
 
 	if (!empty($racenumber)){
@@ -966,7 +956,7 @@ function entete(){
 	<meta name="Author" content="JF">
 	<meta name="description" content="SailOnLine races to G.E."/>
     <link rel="author" title="Auteur" href="mailto:jean.fruitet@free.fr">
-	<link href="style2.css" rel="stylesheet" type="text/css">
+	<link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
@@ -1024,39 +1014,6 @@ echo '</div>
 ';
 
 }
-
-//---------
-function enqueue(){
-global $version;
-echo '
-<div id="piedpage">
-
-Version '.$version.' (<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc - by sa</a>) JF 2016-2017
-
-</div>
-</body>
-</html>
-';
-}
-
-
-// ----------------------------
-function get_url_pere($path) {
-// Retourne l'URL du répertoire contenant le script
-// global $PHP_SELF;
-// DEBUG
-// echo "<br>PHP_SELF : $PHP_SELF\n";
-//	$path = $PHP_SELF;
-	$nomf = substr( strrchr($path, "/" ), 1);
-	if ($nomf){
-		$pos = strlen($path) - strlen($nomf) - 1;
-		$pere = substr($path,0,$pos);
-	}
-	else
-		$pere = $path;
-	return $pere;
-}
-
 
 //------------------------------
 function afficheBoats($race){
@@ -1279,29 +1236,6 @@ global $al;
 ';
 }
 
-//---------------
-function onelinemenu(){
-global $phpscript;
-global $lang;
-global $racenumber;
-global $token;
-	// DEBUG
-	// echo " '$phpscript' ";
-	if (!empty($phpscript)){
-		switch ($phpscript)  {
-			case 'sol_my_boat.php' :
-				echo ' <b>SolMyBoat</b> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
-			break;
-			case 'solboats2kml.php' :
-				echo '  <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <b>SolBoatsToKml</b> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
-			break;
-			default :
-            	echo '  <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <b>SolToGrib</b>'."\n";
-            break;
-		}
-	}
-}
-
 
 // ------------------
 function afficheImages($prefixe_image='so', $extension_image='jpg'){
@@ -1385,8 +1319,7 @@ global $nkml;
 global $tkml;
 global $nkmz;
 global $tkmz;
-global $max_ligne;
-global $ligne;
+
 //global $fichier_kml_courant;
 //global $fichier_kml_cache;
 global $extension_kml;
@@ -1496,17 +1429,277 @@ global $al;
         echo '<p>'.$al->get_string('nofilekml').'</p>'."\n";
 	}
 }
+// ------------------
+function verifieArchivesKML(){
+
+global $dossier_kml;
+global $extension_kml;
+global $dossier_kmz;
+global $extension_kmz;
+global $al;
+
+// DEBUG
+// echo "<br>Fichier KML courant : $fichier_kml_courant\n";
+	$tikml=array();
+	$tikmz=array();
+	$traceskml=array();
+	$traceskmz=array();
+	$sep = '/';
+    $nobj = 0;
+    $nkml = 0;
+	$nkmz = 0;
+	$ndir = 0;
+
+	$path = './'.$dossier_kml;
+	$h1=opendir($path);
+
+    while ($f = readdir($h1) )
+    {
+		if (($f != ".") && ($f != "..")) {
+			// Les fichiers commençant par '_' ne sont pas affichés
+			// Ni le fichier par defaut ni le fichier de cache ne sont affichés
+			// Les fichiers ne commençant pas par le nom par defaut ne sont pas affichés
+			// les fichier n'ayant pas la bonne extension ne sont pas affichés
+	        if (!is_dir($path.$sep.$f)){
+				// KML
+    	       	$g= eregi_replace($extension_kml,"",$f) ;
+				// DEBUG
+				// echo "<br>g:$g  g+:$g$extension_kml  f:$f\n ";
+        	  	if (
+/*
+					(strtoupper($g) != strtoupper($fichier_kml_courant)) // le fichier par defaut n'est pas affiché
+					&&
+					(strtoupper($g) != strtoupper($fichier_kml_cache)) // le fichier de cache n'est pas affiché
+					&&
+					(substr($g,0,1) == substr($fichier_kml_courant,0,1)) // Les fichiers ne commençant pas par le nom par defaut ne sont pas affichés
+					&&
+*/
+					(substr($g,0,1) != "_") // Les fichiers commençant par '_' ne sont pas affichés
+					&&
+					(strtoupper($g.$extension_kml) == strtoupper($f)) // les fichier n'ayant pas la bonne extension ne sont pas affichés
+				) {
+            	   	$nobj ++;
+               		$nkml ++;
+	               	$tikml[$f] = $f ;
+				}
+			} // fin traitement d'un fichier
+		} // fin du test sur entrees speciales . et ..
+	}  // fin du while sur les entrees du repertoire traite
+
+	closedir($h1);
+
+    $path = './'.$dossier_kmz;
+ 	$h2=opendir($path);
+
+    while ($f = readdir($h2) )
+    {
+		if (($f != ".") && ($f != "..")) {
+			// Les fichiers commençant par '_' ne sont pas affichés
+			// Ni le fichier par defaut ni le fichier de cache ne sont affichés
+			// Les fichiers ne commençant pas par le nom par defaut ne sont pas affichés
+			// les fichier n'ayant pas la bonne extension ne sont pas affichés
+	        if (!is_dir($path.$sep.$f)){
+				// KML
+    	       	$g= eregi_replace($extension_kmz,"",$f) ;
+				// DEBUG
+				// echo "<br>g:$g  g+:$g$extension_kml  f:$f\n ";
+        	  	if (
+/*
+					(strtoupper($g) != strtoupper($fichier_kml_courant)) // le fichier par defaut n'est pas affiché
+					&&
+					(strtoupper($g) != strtoupper($fichier_kml_cache)) // le fichier de cache n'est pas affiché
+					&&
+					(substr($g,0,1) == substr($fichier_kml_courant,0,1)) // Les fichiers ne commençant pas par le nom par defaut ne sont pas affichés
+					&&
+*/
+					(substr($g,0,1) != "_") // Les fichiers commençant par '_' ne sont pas affichés
+					&&
+					(strtoupper($g.$extension_kmz) == strtoupper($f)) // les fichier n'ayant pas la bonne extension ne sont pas affichés
+				) {
+            	   	$nobj ++;
+               		$nkmz ++;
+	               	$tikmz[$f] = $f ;
+				}
+			} // fin traitement d'un fichier
+		} // fin du test sur entrees speciales . et ..
+	}  // fin du while sur les entrees du repertoire traite
+
+	closedir($h2);
+
+	if ($nobj>0){
+		$data = new stdClass();
+        $data->nkml = $nkml;
+        $data->tikml = $tikml;
+        $data->nkmz = $nkmz;
+        $data->tikmz = $tikmz;
+        return $data;
+	}
+
+	return NULL;
+
+}
+
+//-------------------
+function displayArchivesKML($data){
+global $dossier_kml;
+global $extension_kml;
+global $dossier_kmz;
+global $extension_kmz;
+global $al;
+
+$sep = '/';
+$path = '.';
+
+	if (!empty($data) && isset($data->nkml) && isset($data->nkmz)){
+
+ 		if (($data->nkml > 0) || ($data->nkmz > 0)){
+			// Javascript
+        	echo '<script type="text/javascript">'."\n";
+			echo '
+// Display KML files
+var indexkml = 0;
+var tjkml = new Array();
+';
+
+			if ( $data->nkml > 0){
+            	//echo '<b>'.$al->get_string('kmlfile').'</b><br />'."\n";
+		        rsort($data->tikml);
+				$j=0;
+				while (list($key) = each($data->tikml)) {
+					echo 'tjkml['.$j.'] = "<a  class=\"small\" href=\"'.$path.$sep.$data->tikml[$key].'\">'.$data->tikml[$key].'</a>  &nbsp; &nbsp; &nbsp; ";'."\n";
+					$j++;
+    			}
+			}
+
+			// fonctions
+			echo '
+function displayPagekml() {
+	var skml = \'\';
+	if ( tjkml.length< 20){
+   		for (i=0;i<tjkml.length;i++){
+			skml+= tjkml[i] + " ";
+		}
+	}
+	else{
+		var $aff =  Math.min (indexkml+20, tjkml.length);
+		var aff2 =  Math.min (20 - ($aff - indexkml), tjkml.length);
+        for (i=indexkml;i<$aff;i++){
+			skml+= tjkml[i] + " ";
+		}
+        //skml+= \'<br>\'+aff2+\'<br>\';
+		if (aff2>0){
+        	for (i=0;i<aff2;i++){
+				skml+= tjkml[i] + " ";
+			}
+		}
+	}
+	document.getElementById(\'divkml\').innerHTML=skml;
+}
+';
+
+			echo '
+function rollKml() {
+    indexkml=++indexkml  % tjkml.length;  // pre-increment is better
+    displayPagekml();
+}
+';
+
+            echo '
+// Display KMZ files
+var indexkmz = 0;
+var trkmz = new Array();
+var tjkmz = new Array();
+
+';
+			if ( $data->nkmz > 0){
+				//echo '<br /><br /><b>'.$al->get_string('kmzfile').'</b><br />'."\n";
+		        rsort($data->tikmz);
+				// Lister les courses
+				/*
+				$j=0;
+				$k=0;
+				while (list($key) = each($tikmz)) {
+					if ($race=substr($tikmz[$key],0,strpos($tikmz[$key],'_')) !== false) {
+						if (!isset($traceskmz[$race])){
+                            $traceskmz[$race]=$race;
+							echo '$t_rkmz['.$k.'] = "'.$race.'";';
+							$k++;
+						}
+					}
+				}
+				*/
+				$j=0;
+				while (list($key) = each($data->tikmz)) {
+		        	//echo '<a  class="small" href="'.$path.$sep.$key.'">'.$tikmz[$key].'</a>  &nbsp; &nbsp; &nbsp; '."\n";
+					echo 'tjkmz['.$j.'] = "<a  class=\"small\" href=\"'.$path.$sep.$data->tikmz[$key].'\">'.$data->tikmz[$key].'</a>  &nbsp; &nbsp; &nbsp; ";'."\n";
+					$j++;
+    			}
+			}
+			// fonctions
+  			echo '
+function displayRacekmz() {
+	var rkmz = \'\';
+	for (i=0;i<trkmz.length;i++){
+		rkmz+= trkmz[i] + " ";
+	}
+    document.getElementById(\'divrkmz\').innerHTML=rkmz;
+}
+
+function displayPagekmz() {
+	var skmz = \'\';
+	if ( tjkmz.length< 20){
+   		for (i=0;i<tjkmz.length;i++){
+			skmz+= tjkmz[i] + " ";
+		}
+	}
+	else{
+		var $aff =  Math.min (indexkmz+20, tjkmz.length);
+		var aff2 =  Math.min (20 - ($aff - indexkmz), tjkmz.length);
+        for (i=indexkmz;i<$aff;i++){
+			skmz+= tjkmz[i] + " ";
+		}
+        //skmz+= \'<br>\'+aff2+\'<br>\';
+		if (aff2>0){
+        	for (i=0;i<aff2;i++){
+				skmz+= tjkmz[i] + " ";
+			}
+		}
+	}
+	document.getElementById(\'divkmz\').innerHTML=skmz;
+}
+';
+
+			echo '
+var rollKmz = function () {
+    indexkmz=(indexkmz+3)  % tjkmz.length;  // pre-increment is better
+    displayPagekmz();
+}
+';
+/*
+            echo '
+//when the user presses the button it will display  the array
+    document.getElementById(\'rollButtonkmz\').addEventListener(\'click\', rollKmz());
+';
+*/
+			echo '</script>'."\n";
+		}
+	}
+	else{
+        echo '<p>'.$al->get_string('nofilekml').'</p>'."\n";
+	}
+
+}
+
 
 // ------------------
-function afficheArchivesKML(){
+function afficheArchivesKML_monolithique(){
 global $nobj;
 global $ndir;
 global $nkml;
 global $tkml;
 global $nkmz;
 global $tkmz;
-global $max_ligne;
-global $ligne;
+
 //global $fichier_kml_courant;
 //global $fichier_kml_cache;
 global $extension_kml;
@@ -1731,7 +1924,7 @@ var rollKmz = function () {
 }
 
 //------------------------
-function creer_dossier_kml(){
+function creer_dossier_kml_old(){
 // Crée un dossier unique pour archiver les donnees KML
 global $dir_serveur;
 global $dossier_3d;
@@ -1766,6 +1959,49 @@ global $dossier_modeles;
 		mkdir($dir_name);
 	}
 }
+
+
+//------------------------
+function creer_dossier_kml($archive=false){
+// Crée un dossier unique pour archiver les donnees KML
+global $dir_serveur;
+global $dossier_kml;
+global $dossier_kmz;
+global $dossier_3d;
+global $dossier_3d_cache;
+global $dossier_textures;
+global $dossier_modeles;
+
+	$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d;
+	if (!file_exists($dir_name)){
+		mkdir($dir_name);
+	}
+	$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d.'/'.$dossier_modeles;
+	if (!file_exists($dir_name)){
+		mkdir($dir_name);
+	}
+	$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
+	if (!file_exists($dir_name)){
+		mkdir($dir_name);
+	}
+
+	if ($archive){
+		$dossier_3d_cache=$dossier_3d.'_'.date("YmdH");
+		$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d_cache;
+		if (!file_exists($dir_name)){
+			mkdir($dir_name);
+		}
+		$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d_cache.'/'.$dossier_modeles;
+		if (!file_exists($dir_name)){
+			mkdir($dir_name);
+		}
+		$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d_cache.'/'.$dossier_modeles.'/'.$dossier_textures;
+		if (!file_exists($dir_name)){
+			mkdir($dir_name);
+		}
+	 }
+}
+
 
 //----------------------------------------
 class UploadException extends Exception

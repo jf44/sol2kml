@@ -2,10 +2,6 @@
 
 // Une clase pour renvoyer TWS et TWD à une position lon, lat
 
-/**
- *
- *
- **/
 // Format des fichiers Grib XML pour SailOnLine
 // n frames temporelles
 // chaque frame temporelle est composée d'une date UTC
@@ -36,6 +32,14 @@ lat_n_points="5" lat_increment="0.5">
 	<frames>
 </weathersystem>
 
+Coordonnées géographiques en degrés décimaux. Mais il faut seméfier car les données
+en longitudes sont représentées
+de 0° (Greenwich EST) à 360° (Greenwich OUEST)
+alors que les coordonnées géographiques de Google Earth sont de (-180 à 180)
+avec Greenwich 0°
+Les latitudes sont de 90° (Pôle Nord) à -90° (Pôle sud) comme dans GE
+
+Les temps sont en UTC (Greenwich)
 */
 
 
@@ -105,7 +109,7 @@ class Grib{
 		if (!empty($data)){
     		foreach ($data as $dta){
 				if (!empty($dta)){
-					if ( ($dta->timestamp >= $timestamp_min) && ($dta->timestamp < $timestamp_max)){
+					if ( ($dta->timestamp >= $timestamp_min) && ($dta->timestamp <= $timestamp_max)){
 						$frame = new stdClass();
 						$frame->timestamp=$dta->timestamp;
 						// expanser les lignes
@@ -124,6 +128,7 @@ class Grib{
 
 	//---------------------------------------
 	public function setGrib_complete($header, $data){
+	// conserve toutes les couches du grib
 		// information d'entete
 		$this->id = $header->id;
 
@@ -162,15 +167,15 @@ class Grib{
 		if (!empty($data)){
     		foreach ($data as $dta){
 				if (!empty($dta)){
-						$frame = new stdClass();
-						$frame->timestamp=$dta->timestamp;
-						// expanser les lignes
-						// chaque ligne <U> </U> est composées de long_n * lat_n valeurs avec un séparateur ';' toutes les lat_n valeurs...
-						$dta->u = str_replace(';','',$dta->u);  // dta->u est un tableau de lon_n lignes de lat_n colonnes
-						$frame->u = explode(' ', $dta->u);      // expanser les enregistrements U et V
-    	                $dta->v = str_replace(';','',$dta->v);  // dta->v est un tableau de lon_n lignes de lat_n colonnes
-						$frame->v = explode(' ', $dta->v);
-						$this->t_grib[]=$frame;
+					$frame = new stdClass();
+					$frame->timestamp=$dta->timestamp;
+					// expanser les lignes
+					// chaque ligne <U> </U> est composées de long_n * lat_n valeurs avec un séparateur ';' toutes les lat_n valeurs...
+					$dta->u = str_replace(';','',$dta->u);  // dta->u est un tableau de lon_n lignes de lat_n colonnes
+					$frame->u = explode(' ', $dta->u);      // expanser les enregistrements U et V
+    	            $dta->v = str_replace(';','',$dta->v);  // dta->v est un tableau de lon_n lignes de lat_n colonnes
+					$frame->v = explode(' ', $dta->v);
+					$this->t_grib[]=$frame;
 					$nf++;
 				}
 			}
@@ -347,7 +352,8 @@ class Grib{
 		// rechercher la frame temporelle
 		$idframe=0;
 
- // Ce code n'a plus lieu d'être car la frame enregistrée en position 0 est celle qu'on recherche !
+ // Ce code n'a plus lieu d'être car la frame enregistrée en position
+ // 0 est celle qu'on recherche !
 		$poursuivre=true;
 		$nbframes = count($this->t_grib);
 		while (($idframe < $nbframes) && $poursuivre){
@@ -385,6 +391,8 @@ class Grib{
 			echo "</pre>\n";
 
 		}
+
+		// Algorithme de SOL : interpolation sur chaque composante séparément
 		// Première composante temporelle
 	    if (isset($this->t_grib[$idframe]->u)){       // composante  Est / Ouest  de TWS
 			$composante_u_00 =  $this->t_grib[$idframe]->u[$pos_rec->index_00];
@@ -449,6 +457,7 @@ class Grib{
         $composante_v=$this->ipolLinTemps($timestamp, $this->t_grib[$idframe]->timestamp, $this->t_grib[$idframe1]->timestamp,
 			$composante_v_0, $composante_v_1);
 
+		// On calcule les vecteurs TWS et TWD
 		$TwsTwd = $this->computeWindsComponents($composante_u, $composante_v);
 
         if ($localdebug){
@@ -502,8 +511,8 @@ TWD = (180 / pi) * arctan(U / V) + A
 
     	$tws =  $tws_ms * 1.94384449244059;  // conversion en noeuds
 		$TwsTwd = new stdClass();
-    		$TwsTwd->tws=$tws;
-	    	$TwsTwd->twd=$twd;
+    	$TwsTwd->tws=$tws;
+	    $TwsTwd->twd=$twd;
 		return $TwsTwd;
 	}
 
@@ -645,18 +654,6 @@ VXTY = VXT0 + ( VXT1 - VXT0 )  x ( 1/2 + cos ( DUREE_SECONDES_NORMALISEE / 2PI )
 		}
 	}
 
-/*
-			// enregistrer dans le dossier ./SOLGribXml
-		    if ($gf = fopen($grib2export, "w")){
-                $uneGrib->
-            	if (fwrite($gf, $grib) === FALSE){
-									echo "<br />Erreur d'écriture du fichier Grib...\n";
-								}
-								fclose($gf);
-							}
-
-*/
-
 	//---------------------------------------
 	public function exportGrib($grib2export){
 	// les données sont rangées en serie de lat_n valeurs successives sur une "hauteur" de long_
@@ -696,7 +693,7 @@ VXTY = VXT0 + ( VXT1 - VXT0 )  x ( 1/2 + cos ( DUREE_SECONDES_NORMALISEE / 2PI )
                 $s.=sprintf("\n%3.5f\t", $j*(float)$this->lat_inc+(float)$this->lat_min);
 				for ($i=0; $i<$this->lon_n; $i++){
 					$TwsTwd=$this->computeWindsComponents($frame->u[$i*$this->lat_n + $j], $frame->v[$i*$this->lat_n + $j]);
-					$s.=sprintf("%3.5f, %3.5f\t", $TwsTwd->tws,$TwsTwd->twd);
+					$s.=sprintf("%3.5f;%3.5f\t", $TwsTwd->tws,$TwsTwd->twd);
 				}
 				$j--;
 			}

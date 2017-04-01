@@ -50,13 +50,13 @@ function GetFichierModeleVoile($nom_voile, $bord, $modele='monocoque'){
 }
 
 // --------------------
-function GenereTextureCoqueBateau_3D($dossier_3d, $url_serveur, $couleur_coque, $couleur_pont, $couleur_cockpit='255;255;255'){
+function GenereTextureCoqueBateau_3D($dossier_cible, $url_serveur, $couleur_coque, $couleur_pont, $couleur_cockpit='255;255;255'){
 global $dir_serveur;
 global $dossier_modeles;
 global $dossier_textures;
-	$chemin=$dir_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
+	$chemin=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$dossier_textures;
 	if ($url_serveur!=''){ // liens absolus
-		$url=$url_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
+		$url=$url_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$dossier_textures;
 	}
 	else{ // liens relatifs
 		$url='../'.$dossier_modeles.'/'.$dossier_textures;
@@ -103,13 +103,13 @@ global $dossier_textures;
 
 
 // --------------------
-function GenereTextureGrandVoileBateau_3D($dossier_3d, $url_serveur, $couleur){
+function GenereTextureGrandVoileBateau_3D($dossier_cible, $url_serveur, $couleur){
 global $dir_serveur;
 global $dossier_modeles;
 global $dossier_textures;
-	$chemin=$dir_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
+	$chemin=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$dossier_textures;
 	if ($url_serveur!=''){ // liens absolus
-		$url=$url_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
+		$url=$url_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$dossier_textures;
 	}
 	else{ // liens relatifs
 		$url='../'.$dossier_modeles.'/'.$dossier_textures;
@@ -134,13 +134,13 @@ global $dossier_textures;
 }
 
 // --------------------
-function GenereTextureVoileAvantBateau_3D($dossier_3d, $url_serveur, $voile, $couleur){
+function GenereTextureVoileAvantBateau_3D($dossier_cible, $url_serveur, $voile, $couleur){
 global $dir_serveur;
 global $dossier_modeles;
 global $dossier_textures;
-	$chemin=$dir_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
+	$chemin=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$dossier_textures;
 	if ($url_serveur!=''){ // liens absolus
-		$url=$url_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
+		$url=$url_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$dossier_textures;
 	}
 	else{ // liens relatifs
 		$url='../'.$dossier_modeles.'/'.$dossier_textures;
@@ -164,20 +164,20 @@ global $dossier_textures;
 }
 
 // --------------------
-function GenereRessourceMapBateauComplet($dossier_3d, $url_serveur, $bato){
+function GenereRessourceMapBateauComplet($dossier_cible, $url_serveur, $bato){
 // Coque + GV + Voiles avant
 	$s='<ResourceMap>
 ';
-	$s.=GenereTextureCoqueBateau_3D($dossier_3d, $url_serveur, $bato->couleur_coque, $bato->couleur_pont, $bato->couleur_gv);
+	$s.=GenereTextureCoqueBateau_3D($dossier_cible, $url_serveur, $bato->couleur_coque, $bato->couleur_pont, $bato->couleur_gv);
 
-	$s.=GenereTextureGrandVoileBateau_3D($dossier_3d, $url_serveur, $bato->couleur_gv);
+	$s.=GenereTextureGrandVoileBateau_3D($dossier_cible, $url_serveur, $bato->couleur_gv);
 
 	$unevoile = GetNomVoile($bato->voile);
 	if (($unevoile=='spi') || ($unevoile=='genak')){
-		$s.=GenereTextureVoileAvantBateau_3D($dossier_3d, $url_serveur, $bato->voile, $bato->couleur_spi);
+		$s.=GenereTextureVoileAvantBateau_3D($dossier_cible, $url_serveur, $bato->voile, $bato->couleur_spi);
 	}
 	else {
-		$s.=GenereTextureVoileAvantBateau_3D($dossier_3d, $url_serveur, $bato->voile, $bato->couleur_vav);
+		$s.=GenereTextureVoileAvantBateau_3D($dossier_cible, $url_serveur, $bato->voile, $bato->couleur_vav);
 	}
 	$s.='</ResourceMap>
 ';
@@ -190,11 +190,11 @@ function GenereRessourceMapBateauComplet($dossier_3d, $url_serveur, $bato){
 
 
 // --------------------
-function GenereRessourceMapCoque($dossier_3d, $url_serveur, $bato){
+function GenereRessourceMapCoque($dossier_cible, $url_serveur, $bato){
 // Version par element
 	$s='<ResourceMap>
 ';
-	$s.=GenereTextureCoqueBateau_3D($dossier_3d, $url_serveur, $bato->couleur_coque, $bato->couleur_pont, $bato->couleur_gv);
+	$s.=GenereTextureCoqueBateau_3D($dossier_cible, $url_serveur, $bato->couleur_coque, $bato->couleur_pont, $bato->couleur_gv);
 	$s.='</ResourceMap>
 ';
 	return $s;
@@ -202,11 +202,11 @@ function GenereRessourceMapCoque($dossier_3d, $url_serveur, $bato){
 
 
 // --------------------
-function GenereRessourceMapGrandVoile($dossier_3d, $url_serveur, $bato){
+function GenereRessourceMapGrandVoile($dossier_cible, $url_serveur, $bato){
 // Version par element
 	$s='<ResourceMap>
 ';
-	$s.=GenereTextureGrandVoileBateau_3D($dossier_3d, $url_serveur, $bato->couleur_gv);
+	$s.=GenereTextureGrandVoileBateau_3D($dossier_cible, $url_serveur, $bato->couleur_gv);
 	$s.='</ResourceMap>
 ';
 	return $s;
@@ -215,16 +215,16 @@ function GenereRessourceMapGrandVoile($dossier_3d, $url_serveur, $bato){
 
 
 // --------------------
-function GenereRessourceMapVoileAvant($dossier_3d, $url_serveur, $bato){
+function GenereRessourceMapVoileAvant($dossier_cible, $url_serveur, $bato){
 // Version par element
 	$s='<ResourceMap>
 ';
 	$unevoile = GetNomVoile($bato->voile);
 	if (($unevoile=='spi') || ($unevoile=='genak')){
-		$s.=GenereTextureVoileAvantBateau_3D($dossier_3d, $url_serveur, $bato->voile, $bato->couleur_spi);
+		$s.=GenereTextureVoileAvantBateau_3D($dossier_cible, $url_serveur, $bato->voile, $bato->couleur_spi);
 	}
 	else {
-		$s.=GenereTextureVoileAvantBateau_3D($dossier_3d, $url_serveur, $bato->voile, $bato->couleur_vav);
+		$s.=GenereTextureVoileAvantBateau_3D($dossier_cible, $url_serveur, $bato->voile, $bato->couleur_vav);
 	}
 	$s.='</ResourceMap>
 ';
@@ -232,7 +232,7 @@ function GenereRessourceMapVoileAvant($dossier_3d, $url_serveur, $bato){
 }
 
 // --------------------
-function GenereBateauKML_3D($dossier_3d, $url_serveur, $bato, $echelle=6, $altitude=1000){
+function GenereBateauKML_3D($dossier_cible, $url_serveur, $bato, $echelle=6, $altitude=1000){
 // Modele 3D
 // Pas de generation de parcours dans cette fonction
 // le parcours est transformé en Tour apppelé dan GenereEnQueue()
@@ -265,7 +265,7 @@ global $t_parcours;
 
 	$s='';
 	if ($url_serveur!=''){ // liens absolus
-		$url_modeles=$url_serveur.'/'.$dossier_3d.'/'.$dossier_modeles;
+		$url_modeles=$url_serveur.'/'.$dossier_cible.'/'.$dossier_modeles;
 	}
 	else{ // liens relatifs
 		$url_modeles=$dossier_modeles;
@@ -423,20 +423,20 @@ $s.='</p>]]>
 				if ($fichier_dae!=''){
 					// recopier le fichier modele
 // version individualisée
-//if (recopier_modele_complet_dae_old($dossier_3d, $fichier_dae, $bato->nom, GetNomVoile($bato->voile), $bato->type, $bord, $modele)){
+//if (recopier_modele_complet_dae_old($dossier_cible, $fichier_dae, $bato->nom, GetNomVoile($bato->voile), $bato->type, $bord, $modele)){
 // $s.='			<Link id="'.$bato->nom.'">
 //    			<href>'.$url_modeles.'/'.$bato->nom.'_'.GetNomVoile($bato->voile).'_'.$bord.$modele.'.dae</href>
 //    		</Link>
 // ';
 
-				if (recopier_modele_complet_dae($dossier_3d, $fichier_dae, GetNomVoile($bato->voile), $bato->type, $bord, $modele)){
+				if (recopier_modele_complet_dae($dossier_cible, $fichier_dae, GetNomVoile($bato->voile), $bato->type, $bord, $modele)){
 						$s.='			<Link id="'.$bato->nom.'">
     			<href>'.$url_modeles.'/'.GetNomVoile($bato->voile).'_'.$bord.$modele.'.dae</href>
     		</Link>
 ';
 					}
 				}
-                $s.= GenereRessourceMapBateauComplet($dossier_3d, $url_serveur, $bato);
+                $s.= GenereRessourceMapBateauComplet($dossier_cible, $url_serveur, $bato);
 				$s.='
 		</Model>
 ';
@@ -454,14 +454,14 @@ $s.='</p>]]>
                     $modele='';
                 }
 
-				if (recopier_modele_voilier_dae($dossier_3d, $bato->nom, $bato->type, $modele)){
+				if (recopier_modele_voilier_dae($dossier_cible, $bato->nom, $bato->type, $modele)){
 						$s.='			<Link id="'.$bato->nom.'_coque'.$modele.'">
     			<href>'.$url_modeles.'/'.$bato->nom.'_coque'.$modele.'.dae</href>
     		</Link>
 ';
 				}
 
-				$s.= GenereRessourceMapCoque($dossier_3d, $url_serveur, $bato);
+				$s.= GenereRessourceMapCoque($dossier_cible, $url_serveur, $bato);
 				$s.='
 		</Model>
 
@@ -490,13 +490,13 @@ $s.='</p>]]>
 ';
 				// A VERIFIER CAR ICI J'IMPROVISE
 				// recopier le fichier modele
-				if (recopier_modele_gv_dae($dossier_3d, $bato->nom, $bato->type, $modele, $bord)){
+				if (recopier_modele_gv_dae($dossier_cible, $bato->nom, $bato->type, $modele, $bord)){
 						$s.='			<Link id="'.$bato->nom.'_gv">
     			<href>'.$url_modeles.'/'.$bato->nom.'_gv'.$modele.'.dae</href>
     		</Link>
 ';
 				}
-				$s.= GenereRessourceMapGrandVoile($dossier_3d, $url_serveur, $bato);
+				$s.= GenereRessourceMapGrandVoile($dossier_cible, $url_serveur, $bato);
 				$s.='
 		</Model>
 
@@ -527,7 +527,7 @@ $s.='</p>]]>
 				if ($fichier_dae!=''){
 					// recopier le fichier modele
 
-					if (recopier_modele_voile_dae($dossier_3d, $fichier_dae, $bato->nom, $bato->type, $modele, GetNomVoile($bato->voile))){
+					if (recopier_modele_voile_dae($dossier_cible, $fichier_dae, $bato->nom, $bato->type, $modele, GetNomVoile($bato->voile))){
 						$s.='			<Link id="'.$bato->nom.'_'.GetNomVoile($bato->voile).$modele.'">
     			<href>'.$url_modeles.'/'.$bato->nom.'_'.GetNomVoile($bato->voile).$modele.'.dae</href>
     		</Link>
@@ -535,7 +535,7 @@ $s.='</p>]]>
 
 					}
 				}
-				$s.= GenereRessourceMapVoileAvant($dossier_3d, $url_serveur, $bato);
+				$s.= GenereRessourceMapVoileAvant($dossier_cible, $url_serveur, $bato);
 				$s.='
 		</Model>
 */
@@ -553,6 +553,8 @@ $s.='</p>]]>
 	}
 	return $s;
 }
+
+
 // --------------------
 function GenereMarquesParcoursEtDebutPositionsBateauxKML_3D($echelle, $okmarques=true){
 global $url_serveur;
@@ -626,7 +628,7 @@ function genere_texture($chemin, $rouge, $vert, $bleu, $size=144){
 
 
 //------------------------
-function recopier_modele_complet_dae_nombateau($dossier_3d, $fichier_dae, $nom_bato, $voile, $dossier_type, $bord, $modele){
+function recopier_modele_complet_dae_nombateau($dossier_cible, $fichier_dae, $nom_bato, $voile, $dossier_type, $bord, $modele){
 // copie du modele sous le nom du bateau
 global $dir_serveur;
 global $extension_dae;
@@ -637,7 +639,7 @@ global $dossier_modeles;
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae)){
 		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae);
-		$f_name=$dir_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$nom_bato.'_'.$voile.'_'.$bord.$modele.$extension_dae;
+		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$nom_bato.'_'.$voile.'_'.$bord.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
 			fwrite($fp, $contenu);
@@ -649,7 +651,7 @@ global $dossier_modeles;
 }
 
 //------------------------
-function recopier_modele_complet_dae($dossier_3d, $fichier_dae, $voile, $dossier_type, $bord, $modele){
+function recopier_modele_complet_dae($dossier_cible, $fichier_dae, $voile, $dossier_type, $bord, $modele){
 // copie du modele generique
 // gain appareciable de place
 global $dir_serveur;
@@ -661,7 +663,7 @@ global $dossier_modeles;
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae)){
 		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae);
-		$f_name=$dir_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$voile.'_'.$bord.$modele.$extension_dae;
+		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$voile.'_'.$bord.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
 			fwrite($fp, $contenu);
@@ -675,7 +677,7 @@ global $dossier_modeles;
 
 
 //------------------------
-function recopier_modele_coque_dae($dossier_3d, $nom_bato, $dossier_type, $modele){
+function recopier_modele_coque_dae($dossier_cible, $nom_bato, $dossier_type, $modele){
 // copie du modele sous le nom du bateau
 global $dir_serveur;
 global $extension_dae;
@@ -685,7 +687,7 @@ global $dossier_modeles;
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/coque'.$modele.'.dae')){
 		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/coque'.$modele.'.dae');
-		$f_name=$dir_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$nom_bato.'_coque'.$modele.$extension_dae;
+		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$nom_bato.'_coque'.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
 			fwrite($fp, $contenu);
@@ -697,7 +699,7 @@ global $dossier_modeles;
 }
 
 //------------------------
-function recopier_modele_gv_dae($dossier_3d, $nom_bato, $dossier_type, $modele, $bord){
+function recopier_modele_gv_dae($dossier_cible, $nom_bato, $dossier_type, $modele, $bord){
 // copie du modele sous le nom du bateau
 global $dir_serveur;
 global $extension_dae;
@@ -707,7 +709,7 @@ global $dossier_modeles;
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/gv_'.$bord.$modele.'.dae')){
 		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/gv_'.$bord.$modele.'.dae');
-		$f_name=$dir_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$nom_bato.'_gv'.$modele.$extension_dae;
+		$f_name=$dir_serveur.'/'.$dossier_cible.$dossier_modeles.'/'.$nom_bato.'_gv'.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
 			fwrite($fp, $contenu);
@@ -721,7 +723,7 @@ global $dossier_modeles;
 
 //------------------------
 //     (recopier_modele_voile_dae($dossier_3d, $fichier_dae, $bato->nom, $bato->type, $modele, GetNomVoile($bato->voile))
-function recopier_modele_voile_dae($dossier_3d, $fichier_dae, $nom_bato, $dossier_type, $modele, $voile){
+function recopier_modele_voile_dae($dossier_cible, $fichier_dae, $nom_bato, $dossier_type, $modele, $voile){
 // copie du modele sous le nom du bateau
 global $dir_serveur;
 global $extension_dae;
@@ -731,7 +733,7 @@ global $dossier_modeles;
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae)){
 		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae);
-		$f_name=$dir_serveur.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$nom_bato.'_'.$voile.$modele.$extension_dae;
+		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$nom_bato.'_'.$voile.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
 			fwrite($fp, $contenu);
@@ -745,7 +747,7 @@ global $dossier_modeles;
 
 
 // -----------------------
-function EnregistreKML_3D($dossier_3d,  $contenu,  $archive=false, $en=false){
+function EnregistreKML_3D($dossier_3d,  $contenu,  $archive=false, $al=NULL){
 // Deux fichiers sont crees : un fichier d'archive et un fichier courant (dit de cache) au contenu midentique.
 // c'est ce fichier de cache (dont le nom est toujours identique) qui est appelé par le fichier kml lu par GoogleEarth
 // Le dossier d'achive est zippé
@@ -755,6 +757,8 @@ global $fichier_kml_courant;
 global $fichier_kml_cache;
 global $extension_kml;
 global $extension_kmz;
+global $dossier_kml;
+global $dossier_kmz;
 global $dossier_modeles;
 global $dossier_textures;
 global $al;
@@ -762,23 +766,23 @@ $fichier_kml_cache_3d=$fichier_kml_cache.'3D';
 
 	
 	// Commencer par enregister le fichier KML
-	$f_cache_name=$dir_serveur.'/'.$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml;
+	$f_cache_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml;
 	$fp_data = fopen($f_cache_name, 'w');
 	if ($fp_data ){
 		fwrite($fp_data, $contenu);
 		fclose($fp_data);
 	}
 
-	if ($archive==true){
+	if ($archive){
 		// faire une copie zippee du  dossier $dossier_3d 
 		// if (creer_fichier_zip($dir_serveur, $dossier_3d, $fichier_kml_cache_3d)){
 			// if (creer_fichier_zip('', $dossier_3d, $fichier_kml_cache_3d)){
 		$t_fichiers=array();
-		$t_fichiers[0]=$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml;
-		$t_fichiers[1]=$dossier_3d.'/'.$dossier_modeles;
-		$t_fichiers[2]=$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
+		$t_fichiers[0]=$dossier_kml.'/'.$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml;
+		$t_fichiers[1]=$dossier_kml.'/'.$dossier_3d.'/'.$dossier_modeles;
+		$t_fichiers[2]=$dossier_kml.'/'.$dossier_3d.'/'.$dossier_modeles.'/'.$dossier_textures;
 
-		if (creer_fichier_zip($dossier_3d, $t_fichiers, $fichier_kml_cache_3d)){
+		if (creer_fichier_zip($dossier_kml.'/'.$dossier_3d, $t_fichiers, $fichier_kml_cache_3d)){
 			// puis le renommer .kmz
 			$nom_fichier_kmz=renommer_fichier($fichier_kml_cache_3d, $extension_kmz);
 			// DEBUG
@@ -788,16 +792,29 @@ $fichier_kml_cache_3d=$fichier_kml_cache.'3D';
 				// le nom du fichier d'archive recoit une date+heure qui sera utilisee 
 				// pour verifier si le delai depuis la génération précédente est suffisant
 				$f_name_cache=$dir_serveur.'/'.$nom_fichier_kmz;
-				$f_archive=$dir_serveur.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz;
+				$f_archive=$dir_serveur.'/'.$dossier_kml.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz;
 				copy($f_name_cache, $f_archive);
+                rename($f_name_cache, $dir_serveur.'/'.$dossier_kmz.'/'.$nom_fichier_kmz);
+                rename($f_archive, $dir_serveur.'/'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz);
 
-				echo '<br>'.$al->get_string('thefile').'<a href="'.$fichier_kml_cache_3d.$extension_kmz.'"><b>'.$fichier_kml_cache_3d.$extension_kmz.'</b></a> '.$al->get_string('isupdated')."\n";
-				// echo '<br>Le fichier d\'archive <a href="'.$f_name_cache.'"><b>'.$f_name_cache.'</b></a> a &eacute;t&eacute; actualis&eacute;.'."\n";
+				if ($al){
+					echo '<br />'.$al->get_string('file_updated').' <a href="'.$dossier_kmz.'/'.$fichier_kml_cache_3d.$extension_kmz.'"><b>'.$fichier_kml_cache_3d.$extension_kmz.'</b></a>'."\n";
+        			echo '<br />'.$al->get_string('file_zip').' <a href="'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'"><b>'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'</b></a>'."\n";
+				}
+				else{
+					echo '<br />Updated File: <a href="'.$dossier_kmz.'/'.$fichier_kml_cache_3d.$extension_kmz.'"><b>'.$fichier_kml_cache_grib.$extension_kmz.'</b></a>'."\n";
+					echo '<br />Zipped File: <a href="'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'"><b>'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'</b></a>'."\n";
+				}
 			}
 		}
 	}
 	else{
-		echo '<br>'.$al->get_string('thefile').'<a href="'.$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml.'"><b>'.$fichier_kml_cache_3d.$extension_kml.'</b></a> '.$al->get_string('isupdated')."\n";
+		if ($al){
+			echo $al->get_string('file_updated').' <a href="'.$dossier_kml.'/'.$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml.'"><b>'.$fichier_kml_cache_3d.$extension_kml.'</b></a>'."\n";
+		}
+		else{
+			echo 'File updated: '.' <a href="'.$dossier_kml.'/'.$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml.'"><b>'.$fichier_kml_cache_3d.$extension_kml.'</b></a>'."\n";
+		}
 	}
 }
 
@@ -805,14 +822,17 @@ $fichier_kml_cache_3d=$fichier_kml_cache.'3D';
 function ExisteKML_3D(){
 // verifie si une generation a ete faite durant l'heure courante
 global $dir_serveur;
+global $dossier_kml;
+global $dossier_kmz;
 global $dossier_3d;
 global $fichier_kml_courant;
 global $fichier_kml_cache;
 global $extension_kml;
 global $extension_kmz;
-$fichier_kml_cache_3d=$fichier_kml_cache.'3D';
 
-	$f_data_name=$dir_serveur.'/'.$fichier_kml_cache_3d.date('YmdH').$extension_kmz;
+	$fichier_kml_cache_3d=$fichier_kml_cache.'3D';
+
+	$f_data_name=$dir_serveur.'/'.$dossier_kmz.'/'.$fichier_kml_cache_3d.date('YmdH').$extension_kmz;
 	// DEBUG
 	// echo "<br>Fichier courant: $f_data_name\n";
 	
@@ -849,6 +869,8 @@ global $url_serveur;
 // --------------------
 function GenereEnteteKML_3D($longitude, $latitude, $cog ){
 global $url_serveur;
+global $dossier_kml;
+global $dossier_kmz;
 global $racename;
 global $racenumber;
 global $image_nom_course;
@@ -857,7 +879,7 @@ global $image_nom_course;
 		$url=$url_serveur.'/'.$image_nom_course;
 	}
 	else{ // liens relatifs
-		$url='./'.$image_race;
+		$url='./'.$image_nom_course;
 	}
 // corrige un bug dans KML
 $racename=str_replace('&',' ',$racename);
@@ -918,12 +940,14 @@ function GenereKML_3D($dossier_3d){
 // génère le fichier KML courant qui se connecte au serveur depuis Google Earth
 
 global $dir_serveur;
+global $dossier_kml;
 global $url_serveur;
 global $fichier_kml_courant;
 global $fichier_kml_cache;
 global $extension_kml;
 global $extension_kmz;
-$fichier_kml_cache_3d=$fichier_kml_cache.'3D';
+
+	$fichier_kml_cache_3d=$fichier_kml_cache.'3D';
 
 	$s='<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -933,7 +957,7 @@ $fichier_kml_cache_3d=$fichier_kml_cache.'3D';
       <refreshVisibility>0</refreshVisibility>
       <flyToView>1</flyToView>
       <Link>
-        <href>'.$url_serveur.'/'.$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml.'</href>
+        <href>'.$url_serveur.'/'.$dossier_kml.'/'.$dossier_3d.'/'.$fichier_kml_cache_3d.$extension_kml.'</href>
         <refreshInterval>1800</refreshInterval>
         <viewRefreshMode>onRequest</viewRefreshMode>
       </Link>

@@ -130,4 +130,10 @@ $t_string['arrow'] ='Arrows';
 $t_string['barbsize'] ='Scale of barbs';
 $t_string['display'] ='Display';
 $t_string['datadispo'] ='Data are ready.';
+$t_string['titleindex'] ='JF SailOnLine Tools';
+$t_string['home'] ='Home';
+$t_string['file_updated'] ='Updated file: ';
+$t_string['file_zip'] ='Zipped file: ';
+$t_string['teaser'] ='Test our tools and get pictures of your boats in G.E.';
+
 ?>

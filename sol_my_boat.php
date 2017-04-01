@@ -4,14 +4,15 @@
 // Connexion à la curse avec son propre identifiant
 // Retouorne un token valide
 
-//define ('DEBUG', 0);      // debogage maison !:))
-define ('DEBUG', 1);
+define ('DEBUG', 0);      // debogage maison !:))
+//define ('DEBUG', 1);
 define ('DEBUG2', 0);
-require_once("./lang/GetStringClass.php"); // localisation
-require_once("./sol_include/sol_config.php");
-require_once("./sol_include/sol_Boat_class.php");
-require_once("./sol_include/CoordGeo_class.php");
-require_once("./include/GeoCalc.class.php");
+require_once('include/utils.php'); // utilitaires divers
+require_once('lang/GetStringClass.php'); // localisation languages files
+require_once('sol_include/sol_config.php');  // global variables
+require_once('sol_include/sol_Boat_class.php'); // Booat class for SOL
+require_once('sol_include/CoordGeo_class.php'); // coordinate conversion
+require_once('include/GeoCalc.class.php');      // distance with geographic coordinates
 
 /*
 // sol_config.php global variables
@@ -258,7 +259,7 @@ function entete(){
 	<meta name="Author" content="JF">
 	<meta name="description" content="SailOnLine races"/>
     <link rel="author" title="Auteur" href="mailto:jean.fruitet@free.fr">
-	<link href="style2.css" rel="stylesheet" type="text/css">
+	<link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 ';
@@ -353,58 +354,5 @@ echo '</div>
 ';
 
 }
-
-//---------
-function enqueue(){
-global $version;
-echo '
-<div id="piedpage">
-Version '.$version.' (<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc - by sa</a>) <a href="mailto:jean.fruitet@free.fr">JF</a> 2016-2017 &nbsp;
-</div>
-</body>
-</html>
-';
-}
-
-//---------------
-function onelinemenu(){
-global $phpscript;
-global $lang;
-global $racenumber;
-global $token;
-	// DEBUG
-	// echo " '$phpscript' ";
-	if (!empty($phpscript)){
-		switch ($phpscript)  {
-			case 'sol_my_boat.php' :
-				echo ' <b>SolMyBoat</b> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
-			break;
-			case 'solboats2kml.php' :
-				echo '  <a href="sol_my_boat?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <b>SolBoatsToKml</b> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
-			break;
-			default :
-            	echo '  <a href="sol_my_boat?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <b>SolToGrib</b>'."\n";
-            break;
-		}
-	}
-}
-
-// ----------------------------
-function get_url_pere($path) {
-// Retourne l'URL du répertoire contenant le script
-// global $PHP_SELF;
-// DEBUG
-// echo "<br>PHP_SELF : $PHP_SELF\n";
-//	$path = $PHP_SELF;
-	$nomf = substr( strrchr($path, "/" ), 1);
-	if ($nomf){
-		$pos = strlen($path) - strlen($nomf) - 1;
-		$pere = substr($path,0,$pos);
-	}
-	else
-		$pere = $path;
-	return $pere;
-}
-
 
 ?>

@@ -138,4 +138,10 @@ $t_string['arrow'] ='flèches';
 $t_string['barbsize'] ='Echelle de barbules';
 $t_string['display'] ='Affichage';
 $t_string['datadispo'] ='Les données sont disponibles.';
+$t_string['titleindex'] ='Outils JF pour SailOnLine';
+$t_string['home'] ='Accueil';
+$t_string['file_updated'] ='Fichier mis à jour : ';
+$t_string['file_zip'] ='Zip créé : ';
+$t_string['teaser'] ='Testez nos outils et obtenez des images de vos voiliers dans G.E.';
+
 ?>

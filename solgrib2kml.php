@@ -11,8 +11,10 @@
 define ('DEBUG', 0);      // debogage maison !:))
 //define ('DEBUG', 1);
 
-require_once("./lang/GetStringClass.php"); // pour le fonction de manipulation de chaines
-require_once("./sol_include/sol_config.php"); // utilitaires de connexion au serveur SOL
+require_once('lang/GetStringClass.php'); // pour le fonction de manipulation de chaines
+require_once('sol_include/sol_config.php'); // utilitaires de connexion au serveur SOL
+require_once('include/utils.php'); // utilitaires divers
+
 // Gestion des Grib et des traces
 require_once("./include/GribClass.php"); // pour le fonction de manipulation de grib
 require_once("./include/Barbule.php"); // creation de barbules de vent
@@ -23,35 +25,12 @@ require_once('include/zip.php'); // utilise la bibliotheque pclzip
 require_once('include/cache_voiliers.php'); // fonction de cache pour les donnees voilier
 require_once('include/kml_grib.php'); // Génération des barbules
 
-$version="0.2-20170327";
+$version="0.3-20170331";
+$archive = true; // Les ficiers créés sot archivés sous forme kmz
 $lang='en'; // by defautt
 $module='sol2kml'; // pour charger le bon fichier de langue !
 $tlanglist=array(); // Langues disponibles
 
-/*
-// dans sol_config.php
-
-
-$solhost="http://node1.sailonline.org/";
-$webclient = "webclient/";
-$authservice = 'authenticate.xml';
-$raceservice='race_';
-
-$weatherurl='';   // url des gribs de a race  :: /webclient/weatherinfo_196.xml
-$tracksservice=''; // traces_1018.xml
-
-// Path and urls for data download
-$solhost='http://node1.sailonline.org/';
-$webclient = 'webclient/';
-$serviceauth = 'authenticate.xml';
-$serviceraces='races.xml';
-$serviceraceinfo = 'auth_raceinfo_';
-
-$racenumber='';
-$racename='';
-$token='';
-
-*/
 // Path and urls for data download
 $prefixrace='race_';
 $extension='.xml';
@@ -84,9 +63,10 @@ $t_barbules = array(); // liste des barbules chargées
 
 $action='';
 
-
 $scale=2;		// valeur d'echelle des voiliers 3D par defaut
 
+$dossier_kml='kml';
+$dossier_kmz='kmz';
 $dossier_grib='SolGrib';
 $dossier_grib_cache=$dossier_grib;
 $extension_dae='.dae'; // fichier COLLADA
@@ -133,7 +113,6 @@ if (isset($_GET['token'])){
 }
 
 // POST
-
 if (isset($_POST['lang'])){
 	$lang=$_POST['lang'];
 }
@@ -196,13 +175,18 @@ else{
 
 
 // COOKIES  OUTPUT
-if (isset($racename) && ($racename!="") ){
+if (isset($racename) && !empty($racename) ){
 	setcookie("solracename", $racename);
 }
+if (isset($racenumber) && ($racenumber!="") ){
+	setcookie("solracenumber", $racenumber);
+}
+if (isset($lang) && ($lang!="") ){
+	setcookie("sollang", $lang);
+}
 
-
-$al= new GetString();
-// DEBUG
+// Localisation
+$al = new GetString();
 $tlanglist=$al->getAllLang('./lang',$module);
 
 if ($aFile = $al->setLang('./lang', $lang, $module)){
@@ -210,8 +194,6 @@ if ($aFile = $al->setLang('./lang', $lang, $module)){
 }
 
 require_once("./sol_include/sol_connect.php"); // utilitaires de connexion au serveur SOL
-
-
 
 // recuperer un token generique avec le compte "sol" "sol"
 if (empty($token) && !empty($racenumber)){
@@ -230,13 +212,9 @@ $filenamemarkpolars=$serviceraceinfo.$racenumber.$extension.'?token='.$token;
 
 // ########################### DEBUT DU PROGRAMME ###################
 entete();
-echo '
-<div id="menudroite">
-';
 menu();
-echo '</div>
-';
-echo '<div id="bigdisplay"><h4>'.$al->get_string('process').'</h4>
+echo '<div id="consolegauche">
+<h4>'.$al->get_string('process').'</h4>
 ';
 $timestamp=time();
 echo $date=date("Y/m/d H:i:s T",$timestamp) . "<br />\n";
@@ -349,7 +327,7 @@ if (($action=='go') || ($action==$al->get_string('validate'))){
 
                     	$pos2=strrpos($grb_filename,'.');
 						$grb_filename2export = substr($grb_filename,0,$pos2);
-                        $grib2export=$grib_path."/".$grb_filename2export.'.csv';
+                        $grib2export=$grib_path."/".$grb_filename2export;
 	            	    // DEBUG
     	            	if (DEBUG){
 							echo '<br />METEO GRIB<pre>'."\n";
@@ -447,7 +425,7 @@ if (!empty($grib)){
         if (DEBUG){
 			echo '<br />METEO GRIB : '.count($t_grib).' enregistrements.<br /><pre>'."\n";
 			print_r($t_grib);
-    	echo '</pre>'."\n";
+	    	echo '</pre>'."\n";
 		}
 
 		$timestamp_min=$timestamp-3600; // Une heure dans le passé
@@ -469,6 +447,9 @@ if (!empty($grib)){
             //$uneGrib->gribToTable(false);
     	    //exit;
             if (!empty($grib2export)){
+				// Calculer la date UTC
+                date_default_timezone_set('UTC');
+				$grib2export.='_'.date("Y-m-d-H T",time()).'.csv';
 				if ($uneGrib->exportGrib($dir_serveur."/".$grib2export)){
                     echo '<br />Données météo TWD / TWS exportées dans le fichier <a target="_blank" href="./'.$grib2export.'"><i>'.$grib2export.'</i></a> <br />'."\n";
 				}
@@ -486,12 +467,11 @@ if (!empty($grib)){
         $t_barbule=$uneGrib->exportGrib2Barbules($grib_info->framecourante, $barb);
 	}
 }
-
 echo '</div>
 ';
 
 //  Génération des données pour G.E.
-echo '<div id="display1">
+echo '<div id="display3">
 <h4>'.$al->get_string('fileexported').'</h4>
 ';
 
@@ -502,7 +482,7 @@ if (!empty($t_barbule)){
 	flush();
 
  	// Structure d'accueil pour les données
-	creer_dossier_kml();
+	creer_dossier_kml($archive);
 	if (isset($t_barbule) && is_array($t_barbule) && (count($t_barbule)>0) ){
   		echo '<p>'.$al->get_string('export1');
 		flush();
@@ -514,7 +494,7 @@ if (!empty($t_barbule)){
 			$i++;
 		}
 		$s.=GenereEnQueueKML_Grib();
-		EnregistreKML_Grib($dossier_grib, $s, false, false);
+		EnregistreKML_Grib($dossier_grib, $s, $archive, $al);
   		echo '<br />'.$al->get_string('export2')."\n";
 		unset($t_barbule);
 	}
@@ -527,7 +507,7 @@ enqueue();
 
 
 // ------------------
-function selectFichier($path, $prefix, $extension, $racenumber){
+function selectFichier($path, $prefix, $extension, $racenumber, $maxdisplay=10){
 global $appli;
 global $max_ligne;
 global $ligne;
@@ -606,14 +586,14 @@ var tj = new Array();
 		echo '
 function displayPage() {
 	var s = \'\';
-	if ( tj.length < 10){
+	if ( tj.length < '.$maxdisplay.'){
    		for (i=0;i<tj.length;i++){
 			s+= tj[i] + " ";
 		}
 	}
 	else{
-		var $aff =  Math.min (index+10, tj.length);
-		var aff2 =  Math.min (10 - ($aff - index), tj.length);
+		var $aff =  Math.min (index+'.$maxdisplay.', tj.length);
+		var aff2 =  Math.min ('.$maxdisplay.' - ($aff - index), tj.length);
         for (i=index;i<$aff;i++){
 			s+= tj[i] + " ";
 		}
@@ -636,7 +616,7 @@ function roll() {
 ';
 		echo '
 function roll10() {
-    index=(index+10) % tj.length;  // pre-increment is better
+    index=(index+'.$maxdisplay.') % tj.length;  // pre-increment is better
     displayPage();
 }
 ';
@@ -765,7 +745,7 @@ function entete(){
 	<meta name="Author" content="JF">
 	<meta name="description" content="races SailOnLine."/>
     <link rel="author" title="Auteur" href="mailto:jean.fruitet@free.fr">
-	<link href="style1.css" rel="stylesheet" type="text/css">
+	<link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
@@ -816,58 +796,8 @@ echo '</div>
 <input type="hidden" name="url_serveur" id="url_serveur" value="'.$url_serveur.'"/>
 <input type="hidden" name="scale" id="scale" value="'.$scale.'"/>
 </form>
-';
-
-	echo '<h4>'.$al->get_string('selectlocalfile').'</h4>
-';
-
-	echo selectFichier($grib_path, $prefixgrib, $extension, '');
-	echo '
-<button id="rollButtongrib" type="button" onclick="roll()">++GRIB</button>
-<button id="rollButtongrib1" type="button" onclick="roll10()">+10GRIB</button>
-<button id="rollButtongrib2" type="button" onclick="rollfirst()">RESET</button>
-';
-echo '<div id="divgrib">
-<script type="text/javascript">
-displayPage();
-</script>
 </div>
 ';
- 	if ($okfichier_charge){
-		echo '<p>'.$al->get_string('datadispo')."</p>\n";
-	}
-
-	echo '</div>
-';
-}
-
-//---------
-function enqueue(){
-global $version;
-echo '
-<div id="piedpage">
-Version '.$version.' (<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc - by sa</a>) <a href="mailto:jean.fruitet@free.fr">JF</a> 2016-2017  &nbsp;
-</div>
-</body>
-</html>
-';
-}
-
-// ----------------------------
-function get_url_pere($path) {
-// Retourne l'URL du répertoire contenant le script
-// global $PHP_SELF;
-// DEBUG
-// echo "<br>PHP_SELF : $PHP_SELF\n";
-//	$path = $PHP_SELF;
-	$nomf = substr( strrchr($path, "/" ), 1);
-	if ($nomf){
-		$pos = strlen($path) - strlen($nomf) - 1;
-		$pere = substr($path,0,$pos);
-	}
-	else
-		$pere = $path;
-	return $pere;
 }
 
 // ------------------------------
@@ -991,22 +921,26 @@ class UploadException extends Exception
 
 // ---------------------------
 function menu(){
-global $time_cache;
-global $str_time_cache;
-global $scale;
-// global $mode;
-global $url_serveur;
-global $url_serveur_local;
-global $utiliser_cache; // par defaut il y a un cache d'une heure sur les donnes des voiliers
-global $racenumber;
-global $racename;
-global $barb;
-global $appli;
-global $al;
-global $lang;
-global $tlanglist;
+	global $appli;
+	global $nomfichier;
+	global $racenumber;
+	global $racename;
+	global $token;
+	global $dir_serveur;
+	global $url_serveur;
+	global $url_serveur_local;
+	global $okfichier_charge;
+    global $barb;
+    global $scale;
+	global $extension;
+	global $prefixmarquesetpolaires;
+	global $grib_path;
+	global $prefixgrib;
+	global $al;
+    global $lang;
+	global $tlanglist;
 
-	echo '
+	echo '<div id="menucentre">
 <h4>'.$al->get_string('fileexportsetup').'</h4>
 <h5 align="center"><b>'.$al->get_string('mapserver').'</b></h5>
 <form action="'.$appli.'" method="post" name="saisie_serveur" id="saisie_serveur">
@@ -1048,19 +982,20 @@ global $tlanglist;
 <input type="hidden" name="racename" id="racename" value="'.$racename.'"/>
 <input type="hidden" name="barb" id="barb" value="'.$barb.'"/>
 </form>
-
-<h5 align="center"><b>'.$al->get_string('modebarb').'</b></h5>
+</div>
+<div id="menudroite">
+<h4>'.$al->get_string('modebarb').'</h4>
 <form action="'.$appli.'" method="post" name="saisie_mode" id="saisie_mode"/>
 <b>'.$al->get_string('display').'</b>
 <br />'.$al->get_string('barb').' <input type="checkbox"  name="barb" id="barb" ';
-if ($barb){
-	echo ' CHECKED />';
-}
-else{
-	echo '  />';
-}
+	if ($barb){
+		echo ' CHECKED />';
+	}
+	else{
+		echo '  />';
+	}
 
-echo '<br /> '.$al->get_string('barbsize').' :
+	echo '<br /> '.$al->get_string('barbsize').' :
 <input type="text" name="scale" size="1" maxsize="3" value="'.$scale.'"/>
 (<span class="small">[<i>0.1</i>, <i>2.0</i>].</span>)
 <br /><br />
@@ -1071,68 +1006,71 @@ echo '<br /> '.$al->get_string('barbsize').' :
 <input type="hidden" name="racename" id="racename" value="'.$racename.'"/>
 </form>
 ';
-}
-
-
-//---------------
-function onelinemenu(){
-global $phpscript;
-global $lang;
-global $racenumber;
-global $token;
-	// DEBUG
-	// echo " '$phpscript' ";
-	if (!empty($phpscript)){
-		switch ($phpscript)  {
-			case 'sol_my_boat.php' :
-				echo ' <b>SolMyBoat</b> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
-			break;
-			case 'solboats2kml.php' :
-				echo '  <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <b>SolBoatsToKml</b> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
-			break;
-			default :
-            	echo '  <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <b>SolToGrib</b>'."\n";
-            break;
-		}
+	echo '<h4>'.$al->get_string('selectlocalfile').'</h4>
+';
+	echo selectFichier($grib_path, $prefixgrib, $extension, '', 6);
+	echo '
+<button id="rollButtongrib" type="button" onclick="roll()">+GRIB</button>
+<button id="rollButtongrib1" type="button" onclick="roll10()">++GRIB</button>
+<button id="rollButtongrib2" type="button" onclick="rollfirst()">RESET</button>
+';
+	echo '<div id="divgrib">
+<script type="text/javascript">
+displayPage();
+</script>
+</div>
+';
+ 	if ($okfichier_charge){
+		echo '<p>'.$al->get_string('datadispo')."</p>\n";
 	}
+	echo '
+</div>
+';
 }
+
 
 
 //------------------------
-function creer_dossier_kml(){
+function creer_dossier_kml($archive=false){
 // Crée un dossier unique pour archiver les donnees KML
 global $dir_serveur;
+global $dossier_kml;
+global $dossier_kmz;
 global $dossier_grib;
 global $dossier_grib_cache;
 global $dossier_textures;
 global $dossier_modeles;
 
-	$dir_name=$dir_serveur.'/'.$dossier_grib;
+	$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_grib;
 	if (!file_exists($dir_name)){
 		mkdir($dir_name);
 	}
-	$dir_name=$dir_serveur.'/'.$dossier_grib.'/'.$dossier_modeles;
+	$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_grib.'/'.$dossier_modeles;
 	if (!file_exists($dir_name)){
 		mkdir($dir_name);
 	}
-	$dir_name=$dir_serveur.'/'.$dossier_grib.'/'.$dossier_textures;
+	$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_grib.'/'.$dossier_textures;
 	if (!file_exists($dir_name)){
 		mkdir($dir_name);
 	}
+    recopier_windbar($dossier_kml.'/'.$dossier_grib);
 
-	$dossier_grib_cache=$dossier_grib.'_'.date("YmdH");
-	$dir_name=$dir_serveur.'/'.$dossier_grib_cache;
-	if (!file_exists($dir_name)){
-		mkdir($dir_name);
-	}
-	$dir_name=$dir_serveur.'/'.$dossier_grib_cache.'/'.$dossier_modeles;
-	if (!file_exists($dir_name)){
-		mkdir($dir_name);
-	}
-	$dir_name=$dir_serveur.'/'.$dossier_grib_cache.'/'.$dossier_textures;
-	if (!file_exists($dir_name)){
-		mkdir($dir_name);
-	}
+	if ($archive){
+		$dossier_grib_cache=$dossier_grib.'_'.date("YmdH");
+		$dir_name=$dir_serveur.'/'.$dossier_kmz.'/'.$dossier_grib_cache;
+		if (!file_exists($dir_name)){
+			mkdir($dir_name);
+		}
+		$dir_name=$dir_serveur.'/'.$dossier_kmz.'/'.$dossier_grib_cache.'/'.$dossier_modeles;
+		if (!file_exists($dir_name)){
+			mkdir($dir_name);
+		}
+		$dir_name=$dir_serveur.'/'.$dossier_kmz.'/'.$dossier_grib_cache.'/'.$dossier_textures;
+		if (!file_exists($dir_name)){
+			mkdir($dir_name);
+            recopier_windbar($dossier_kmz.'/'.$dossier_grib_cache, $archive);
+		}
+	 }
 }
 
 

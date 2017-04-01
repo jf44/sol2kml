@@ -9,7 +9,7 @@ class Cartouche {
 	var $text_color;
 
 	function __construct($nom_image, $texte, $path, $font_name, $font_size, $text_color){
-            $this->nom_image = $nom_image;
+            $this->nom_image = '_'.$nom_image;
 			$this->texte = utf8_decode($texte);
 			$this->path = $path ;
    			$this->font_name = $font_name ;
