@@ -25,14 +25,14 @@ Theses folders are mandatory
 * lang: localisation stuff; add your own traduction here
 * sol_include: specific to SOL configuration and connection
 * SOLGribXml: where grib files are kept.
-NB: These grib have only 2 o 3 layers of data. For a complete grib file use that AG DCChecker produces.
+NB: These gribs have only 2 or 3 layers of data. For a complete grib file use that ones AG DCChecker produces.
 * sources: old stuff for mapping small pictures on G.E. Not used in this version
 * sources_3d: boats models (.dae format) and textures 
 
 These folders are optionnal
 
-* images: Where to keep manual screenshost
-* polar: Not used; the software do not produce poar file riht now. It would be exactly the sames that AG DCChecker
+* images: Where to keep manual screenshots and G.E. screen overlays
+* polar: Not used; the software do not produce polar file right now. If so their would be exactly the sames that AG DCChecker does.
 
 ### solgribtokml.php : a G.E view of a the current layer of the grib file
 
@@ -43,7 +43,7 @@ The data are in the kml/SolGrib folder with the prefix SolWind
 
 ### sol_my_boat.php : Display information about your boat in race.  Not very useful yet.
 
-This soft will be the core of a future SolClient.  
+maybe some days this soft will be at the core of a future SolClient :)) 
 
 
 ### Localisation
