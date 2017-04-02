@@ -72,6 +72,37 @@ will output
 
 So don't bother with the {$a} parametrers, but keep them in the translation.
 
+### Boats models
 
-That's all folks.
+I use DAE (collada) files to put boats in G.E., one serie by type (monohull, multihull, motorboat) 
+
+Models are in the ./source_3d/models/monocoque, the ./source_3d/models/multicoque folder and the ./source_3d/models/motorboat folders.
+
+For each of the 4 boats 'allure' you have to set a 3D views, so two sets of 4 collada files each.
+
+One set for port wind view
+
+* model_foc_babord (hull + mainsail + jib portwind)
+* model_genois_babord (hull + mainsail + genois portwind)
+* model_gennaker_babord (hull + mainsail + gennaker portwind)
+* model_spi_babord (hull + mainsail + spinnaker portwind)
+
+One set for starboard wind
+
+* model_foc_tribord (hull + mainsail + jib starportwind)
+* model_genois_tribord (hull + mainsail + genois starboardwind)
+* model_gennaker_tribord (hull + mainsail + gennaker starboardwind)
+* model_spi_tribord (hull + mainsail + spinnaker starboardwind)
+
+The original 3D models are designed with Sketchup. They are very large but simplified boats object.
+
+The hull and sails colors are images textures computed in the fly, but since the SailOnLine boats colors are not choosen by the users, they seams randomly selected.
+
+It would be an improvement to give the color choice to users...
+
+All textures are kept in the destination folder : ./kml/sol3d/models/textures
+
+If you are interested by the original SketchUp models, or like to add some new models like iceboats, send me an e-mail.
+
+
 

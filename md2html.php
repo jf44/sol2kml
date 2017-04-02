@@ -66,6 +66,8 @@ if ($aFile = $al->setLang('./lang', $lang, $module)){
 }
 
 entete();
+echo '<div id="console">
+';
 if (empty($filename)){
     $filename='README.md';
 }
@@ -92,6 +94,8 @@ onload = function()
 
 </script>
 
+';
+echo '</div>
 ';
 
 enqueue();

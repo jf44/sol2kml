@@ -1205,22 +1205,22 @@ global $al;
 		if ($boattype=='monocoque') {
         	echo '<option value="monocoque" SELECTED>'.$al->get_string('monocoque').'</option>';
         	echo '<option value="multicoque">'.$al->get_string('multicoque').'</option>';
-            echo '<option value="moteur">'.$al->get_string('moteur').'</option>';
+            echo '<option value="motorboat">'.$al->get_string('motorboat').'</option>';
 		}
 		else if ($boattype=='multicoque') {
         	echo '<option value="monocoque">'.$al->get_string('monocoque').'</option>';
         	echo '<option value="multicoque" SELECTED>'.$al->get_string('multicoque').'</option>';
-            echo '<option value="moteur">'.$al->get_string('moteur').'</option>';
+            echo '<option value="motorboat">'.$al->get_string('motorboat').'</option>';
 		}
-		else if ($boattype=='moteur') {
+		else if ($boattype=='motorboat') {
         	echo '<option value="monocoque">'.$al->get_string('monocoque').'</option>';
             echo '<option value="multicoque">'.$al->get_string('multicoque').'</option>';
-        	echo '<option value="moteur" SELECTED>'.$al->get_string('moteur').'</option>';
+        	echo '<option value="motorboat" SELECTED>'.$al->get_string('motorboat').'</option>';
 		}
 		else{
         	echo '<option value="monocoque">'.$al->get_string('monocoque').'</option>';
             echo '<option value="multicoque">'.$al->get_string('multicoque').'</option>';
-            echo '<option value="moteur">'.$al->get_string('moteur').'</option>';
+            echo '<option value="motorboat">'.$al->get_string('motorboat').'</option>';
 		}
 	echo '
 </select>

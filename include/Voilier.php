@@ -32,7 +32,7 @@ class Coordonnees{
 // -----------------------------------
 // la classe voilier 
 class Voilier{
-    var $type; // monocoque, multicoque, moteur
+    var $type; // monocoque, multicoque, motorboat
 	var $mmsi; // identifiant AIS
 	var $nom;
 	var $syc; // yacht club
@@ -176,23 +176,25 @@ class Voilier{
 
 	public function GiteVoilier($debug=false){
 		$gite = new stdClass();
-		$gite->x=0;
-        $gite->y=0;
-		$sign=1;
-		if ($this->twa<0){
-			$sign=-1;
-		}
-		switch ($this->voile){
-			case 2 : 		// spi
-			case 32 : 
-			case 64 : 
-                $gite->x = abs(round((180.0 - abs($this->twa)) * $this->tws *.001)) % 180;
-				$gite->y = (round((180.0 - abs($this->twa)) * $this->tws *.006)) % 180; // (360 - (int) (abs(180 - $this->wind_angle) * $this->wind_speed * 0.005));
-				break;
-			default : 
-                $gite->x = 0.0;
-				$gite->y = $sign * (round((180.0 - abs($this->twa)) * $this->tws *.005)) % 180; // (360 - (int) (abs(180 - $this->wind_angle) * $this->wind_speed * 0.005));
-				break;
+		$gite->x=0.0;
+        $gite->y=0.0;
+		if ($this->type!='motorboat'){
+			$sign=1;
+			if ($this->twa<0){
+				$sign=-1;
+			}
+			switch ($this->voile){
+				case 2 : 		// spi
+				case 32 :
+				case 64 :
+	                $gite->x = abs(round((180.0 - abs($this->twa)) * $this->tws *.001)) % 180;
+					$gite->y = (round((180.0 - abs($this->twa)) * $this->tws *.006)) % 180; // (360 - (int) (abs(180 - $this->wind_angle) * $this->wind_speed * 0.005));
+					break;
+				default :
+    	            $gite->x = 0.0;
+					$gite->y = $sign * (round((180.0 - abs($this->twa)) * $this->tws *.005)) % 180; // (360 - (int) (abs(180 - $this->wind_angle) * $this->wind_speed * 0.005));
+					break;
+			}
 		}
 		// DEBUG
 		if ($debug){

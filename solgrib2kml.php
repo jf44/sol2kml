@@ -213,7 +213,7 @@ $filenamemarkpolars=$serviceraceinfo.$racenumber.$extension.'?token='.$token;
 // ########################### DEBUT DU PROGRAMME ###################
 entete();
 menu();
-echo '<div id="consolegauche">
+echo '<div id="consolebasse">
 <h4>'.$al->get_string('process').'</h4>
 ';
 $timestamp=time();
@@ -467,15 +467,9 @@ if (!empty($grib)){
         $t_barbule=$uneGrib->exportGrib2Barbules($grib_info->framecourante, $barb);
 	}
 }
-echo '</div>
-';
+
 
 //  Génération des données pour G.E.
-echo '<div id="display3">
-<h4>'.$al->get_string('fileexported').'</h4>
-';
-
-
 if (!empty($t_barbule)){
 	echo '<h4>'.$al->get_string('newmap').'</h4>'."\n";
 	echo $al->get_string('wait')."\n";
@@ -499,9 +493,9 @@ if (!empty($t_barbule)){
 		unset($t_barbule);
 	}
 }
+
 echo '</div>
 ';
-
 enqueue();
 
 

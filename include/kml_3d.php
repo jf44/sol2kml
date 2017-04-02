@@ -29,6 +29,10 @@ function GetNomVoile($voile){
 // --------------------
 function GetFichierModeleVoile($nom_voile, $bord, $modele='monocoque'){
 // retourne un modele de fichier dae correspondant a la voile portee
+	if ($modele=='motorboat'){
+        return 'coque_'.$bord.'_motorboat.dae';
+	}
+	else{
 	if ($nom_voile=='spi'){
 		return 'spi_'.$bord.'_'.$modele.'.dae';
 	}
@@ -46,6 +50,7 @@ function GetFichierModeleVoile($nom_voile, $bord, $modele='monocoque'){
 	}
 	else {
 		return 'gv_'.$bord.'_'.$modele.'.dae';
+	}
 	}
 }
 
@@ -252,8 +257,8 @@ global $t_parcours;
 	if ($bato->type=='multicoque'){
 		$modele='trimaran';
 	}
-	else  if ($bato->type=='moteur'){
-    	$modele='motor';
+	else  if ($bato->type=='motorboat'){
+    	$modele='motorboat';
 	}
 	else{
     	$modele='monocoque';

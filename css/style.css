@@ -104,6 +104,7 @@ div#bandeau {
     left:0;
 	width:1208px;
 	height:86px;
+    z-index:2;
     color:navy;
     border:solid 1px navy;
 	background-color:#e0e0e0;
@@ -175,11 +176,28 @@ div#menudroite {
 
 div#console {
     clear:both;
-	position:fixed;
-	left:400px;
+	position:relative;
+	left:0px;
+	top:100px;
+	width:100%;
+    z-index: 0;
+	color: Black;
+    text-align: left;
+	font-family : sans-serif;
+	font-size : 8pt;
+	font-weight : normal;
+	margin : 2px;
+	padding : 4px;
+	white-space : normal;
+}
+
+div#consolebasse {
+    clear:both;
+	position:relative;
+	left:0px;
 	top:478px;
-	width:1194px;
-	height: 600px;
+	width:100%;
+    z-index: 0;
 	color: Black;
     text-align: left;
 	font-family : sans-serif;
@@ -192,9 +210,10 @@ div#console {
 
 div#consolegauche{
 	clear:left;
-	float:left;
+	position:relative;
 	left:0px;
 	width:796px;
+    z-index: 2;
 	color: Black;
     text-align: left;
 	font-family : sans-serif;
@@ -267,12 +286,12 @@ div#display3 {
 
 
 div#bigdisplay {
+	position: relative;
     clear : both;
-	position:fixed;
 	left:0px;
 	top:98px;
 	width:100%;
-	z-index: 2;
+	z-index: 0;
 	color: Black;
     background-color:#ffffff;
     text-align: left;
