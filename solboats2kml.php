@@ -338,7 +338,7 @@ echo '
 ';
 menu();
 echo '</div>
-<div id="console">
+<div id="consoledroite">
 <h4>'.$al->get_string('process').'</h4>
 ';
 if ($action==$al->get_string('validate')){
@@ -1200,26 +1200,36 @@ global $al;
 (<span class="small">[<i>0.1</i>, <i>20.0</i>].</span>)
 <br /><br />
 <br /><b>'.$al->get_string('boattype').'</b> ('.$al->get_string('currentype').':<i> '.$boattype.'</i>)<br />
-<select name="boattype" id="boattype" size="3" />
+<select name="boattype" id="boattype" size="4" />
 ';
 		if ($boattype=='monocoque') {
         	echo '<option value="monocoque" SELECTED>'.$al->get_string('monocoque').'</option>';
-        	echo '<option value="multicoque">'.$al->get_string('multicoque').'</option>';
+        	echo '<option value="catamaran">'.$al->get_string('catamaran').'</option>';
+        	echo '<option value="trimaran">'.$al->get_string('trimaran').'</option>';
             echo '<option value="motorboat">'.$al->get_string('motorboat').'</option>';
 		}
-		else if ($boattype=='multicoque') {
+		else if ($boattype=='catamaran') {
         	echo '<option value="monocoque">'.$al->get_string('monocoque').'</option>';
-        	echo '<option value="multicoque" SELECTED>'.$al->get_string('multicoque').'</option>';
+        	echo '<option value="catamaran" SELECTED>'.$al->get_string('catamaran').'</option>';
+        	echo '<option value="trimaran">'.$al->get_string('trimaran').'</option>';
+            echo '<option value="motorboat">'.$al->get_string('motorboat').'</option>';
+		}
+		else if ($boattype=='trimaran') {
+        	echo '<option value="monocoque">'.$al->get_string('monocoque').'</option>';
+        	echo '<option value="catamaran">'.$al->get_string('catamaran').'</option>';
+        	echo '<option value="trimaran" SELECTED>'.$al->get_string('trimaran').'</option>';
             echo '<option value="motorboat">'.$al->get_string('motorboat').'</option>';
 		}
 		else if ($boattype=='motorboat') {
         	echo '<option value="monocoque">'.$al->get_string('monocoque').'</option>';
-            echo '<option value="multicoque">'.$al->get_string('multicoque').'</option>';
+        	echo '<option value="catamaran">'.$al->get_string('catamaran').'</option>';
+            echo '<option value="trimaran">'.$al->get_string('trimaran').'</option>';
         	echo '<option value="motorboat" SELECTED>'.$al->get_string('motorboat').'</option>';
 		}
 		else{
         	echo '<option value="monocoque">'.$al->get_string('monocoque').'</option>';
-            echo '<option value="multicoque">'.$al->get_string('multicoque').'</option>';
+        	echo '<option value="catamaran">'.$al->get_string('catamaran').'</option>';
+            echo '<option value="trimaran">'.$al->get_string('trimaran').'</option>';
             echo '<option value="motorboat">'.$al->get_string('motorboat').'</option>';
 		}
 	echo '

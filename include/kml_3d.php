@@ -254,7 +254,10 @@ global $t_parcours;
 		$bord = 'tribord';
 	}
 	// recopier le fichier modele
-	if ($bato->type=='multicoque'){
+	if ($bato->type=='catamaran'){
+		$modele='catamaran';
+	}
+	else if ($bato->type=='trimaran'){
 		$modele='trimaran';
 	}
 	else  if ($bato->type=='motorboat'){
@@ -449,11 +452,16 @@ $s.='</p>]]>
 
 /*
 				// recopier le fichier modele
-				if ($bato->type=='multicoque'){
+				// recopier le fichier modele
+				if ($bato->type=='catamaran'){
+					$modele='_catamaran';
+				}
+				else
+				if ($bato->type=='trimaran'){
 					$modele='_trimaran';
 				}
-				else  if ($bato->type=='moteur'){
-                    $modele='_motor';
+				else  if ($bato->type=='motorboat'){
+                    $modele='_motorboat';
 				}
 				else{
                     $modele='';

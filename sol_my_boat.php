@@ -75,7 +75,7 @@ if (isset($_COOKIE["sollang"]) && !empty($_COOKIE["sollang"])){
 }
 
 if (isset($_COOKIE["soltoken"]) && !empty($_COOKIE["soltoken"])){
-	$token=$_COOKIE["token"];
+	$token=$_COOKIE["soltoken"];
 }
 
 if (isset($_COOKIE["solracenumber"]) && !empty($_COOKIE["solracenumber"])){

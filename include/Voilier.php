@@ -240,7 +240,7 @@ class Voilier{
 							$couleur1, $couleur2, $couleur3, $couleur4, $couleur5, $couleur6,
 							$classement=0, $dtg=0, $dbl=0, $log=0, $current_leg=0, $type='monocoque'){
 
-        $this->type=$type;  // type ==  monocoque || multicoque || moteur
+        $this->type=$type;  // type ==  monocoque || catamaran || trimaran || motorboat
 		$this->mmsi=$mmsi;
 		$this->nom=$nom;
         $this->syc=$syc;
