@@ -52,7 +52,7 @@ class Grib{
 	var $lon_delta;
 	var $lon_min360;
     var $lon_max360; // tenir compte de la représentation -180 .. 180 et passer  à 0 .. 360
-
+	var $applique360=false;
 	var $lat_min;  // position du coin inférieure en  latitude
 	var $lat_max;
 	var $lat_delta;
@@ -81,14 +81,17 @@ class Grib{
         if (($this->lon_min < 0.0) && ($this->lon_max < 0.0)){
             $this->lon_min360 = (float)($this->lon_min + 360.0);
             $this->lon_max360 = (float)($this->lon_max + 360.0);
+            $this->applique360=true;
 		}
 		else if ($this->lon_min < 0.0){
             $this->lon_min360 = (float)($this->lon_min + 360.0);
             $this->lon_max360 = (float)($this->lon_max + 360.0);
+            $this->applique360=true;
 		}
 		else{
             $this->lon_min360 = (float)($this->lon_min);
             $this->lon_max360 = (float)($this->lon_max);
+            $this->applique360=false;
 		}
 
         $this->lon_delta = (float)($this->lon_max360 - $this->lon_min360);
@@ -139,14 +142,17 @@ class Grib{
         if (($this->lon_min < 0.0) && ($this->lon_max < 0.0)){
             $this->lon_min360 = (float)($this->lon_min + 360.0);
             $this->lon_max360 = (float)($this->lon_max + 360.0);
+            $this->applique360=true;
 		}
 		else if ($this->lon_min < 0.0){
             $this->lon_min360 = (float)($this->lon_min + 360.0);
             $this->lon_max360 = (float)($this->lon_max + 360.0);
+            $this->applique360=true;
 		}
 		else{
             $this->lon_min360 = (float)($this->lon_min);
             $this->lon_max360 = (float)($this->lon_max);
+            $this->applique360=false;
 		}
 
         $this->lon_delta = (float)($this->lon_max360 - $this->lon_min360);
@@ -214,11 +220,11 @@ class Grib{
 	}
 
 	//----------------------------------------------
-	function getDalle($longitude, $latitude){
-    $localdebug=false;
+	function getDalle($longitude, $latitude, $localdebug){
+    //$localdebug=true;
  	   		// ATTENTION au passage de la ligne de changement de jour
 		if ( $localdebug){
-				echo "<br />DEBUG :: GribClass.php :: 98 \n";
+				echo "<br /><br><b>DEBUG :: GribClass.php :: 98</b> \n";
             	echo '<br />Longitude: '.$longitude.'<br/>Latitude: '.$latitude."\n";
 				echo "<br /><b>Lon_min</b>: ".$this->lon_min." Lat_min: ".$this->lon_max."\n";
                 echo "<br /><b>Lon_min360</b>: ".$this->lon_min360." Lon_max360: ".$this->lon_max360."\n";
@@ -228,22 +234,24 @@ class Grib{
 		}
 
 		// attention aux longitudes negatives car il n'y en a pas dans les grib
-		if ($longitude < 0.0 ){
-			$longitude360 = ((float)$longitude + 360.0) ;
+        if (!$this->applique360){
+			if ($longitude < 0.0 ){
+				$longitude360 = ((float)$longitude + 360.0) ;
+			}
+			else{
+            	$longitude360 = (float)$longitude;
+			}
 		}
 		else{
-            $longitude360 = (float)$longitude;
+			$longitude360 = ((float)$longitude + 360.0) ;
 		}
 
-
-
-  		if (($this->lon_inc==0.0) || ($this->lat_inc==0.0)){
+		if (($this->lon_inc==0.0) || ($this->lat_inc==0.0)){
 			echo "<br />DEBUG :: GribClass.php :: 114 :: <br />ERREUR \n";
 			echo "Lon_inc: ".$this->lon_inc." Lat_inc: ".$this->lat_inc."<br />\n";
             die("DIVISION PAR ZERO\n");
 
 		}
-
 
 		$dalle = new stdClass();
 		$dalle->index_lon = floor(($longitude360 - $this->lon_min360) / (float)$this->lon_inc );       // indice dans la dalle des données
@@ -332,7 +340,7 @@ class Grib{
         	echo "LON Delta: ".$this->lon_delta." LAT Delta: ".$this->lat_delta."\n";
 		}
 
-		$cette_dalle = $this->getDalle($longitude, $latitude);
+		$cette_dalle = $this->getDalle($longitude, $latitude, $localdebug);
 
         if ($localdebug){
 			echo "<b>Dalle Grib</b>\n";
@@ -350,6 +358,7 @@ class Grib{
 		}
 
 		// rechercher la frame temporelle
+
 		$idframe=0;
 
  // Ce code n'a plus lieu d'être car la frame enregistrée en position
@@ -374,6 +383,8 @@ class Grib{
 		// fenetre trouvee
 		$idframe--; // reculer
 		$idframe1=$idframe+1; // fenêtre temporelle suivante
+		// echo "<br />DEBUG :: GribClass :: 360:: NBFRAMES : $nbframes<br />IDFRAME: $idframe IDFRAME1: $idframe1\n";
+
 
         if (false){
 			echo "<br />Frame sélectionnée: ".$idframe." GRIB TIMESTAMP : ".$this->t_grib[$idframe]->timestamp."\n";
@@ -389,6 +400,22 @@ class Grib{
 	       	echo "<pre>\n";
 			print_r($pos_rec);
 			echo "</pre>\n";
+			if ($pos_rec->index_00 < 0){
+				echo "<br />ERREUR : INDEX_00 Négatif : $pos_rec->index_00\n";
+				exit;
+			}
+			if ($pos_rec->index_10 < 0){
+				echo "<br />ERREUR : INDEX_10 Négatif : $pos_rec->index_10\n";
+				exit;
+			}
+			if ($pos_rec->index_01 < 0){
+				echo "<br />ERREUR : INDEX_01 Négatif : $pos_rec->index_01\n";
+				exit;
+			}
+			if ($pos_rec->index_11 < 0){
+				echo "<br />ERREUR : INDEX_11 Négatif : $pos_rec->index_11\n";
+				exit;
+			}
 
 		}
 
