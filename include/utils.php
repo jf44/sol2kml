@@ -31,7 +31,7 @@ global $token;
 function enqueue(){
 global $version;
 echo '
-<div id="piedpage">
+<div id="footer">
 Version '.$version.' (<a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">cc - by sa</a>) <a href="mailto:jean.fruitet@free.fr">JF</a> 2016-2017  &nbsp;
 </div>
 </body>
