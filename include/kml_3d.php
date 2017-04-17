@@ -3,6 +3,8 @@
 // JF + Xolub + Kobis
 
 // Génération KML des  VOILIERS en 3D
+// 2017/04/17
+
 // --------------------
 function GetNomVoile($voile){
 // retourne une  voile
@@ -263,6 +265,9 @@ global $t_parcours;
 	else  if ($bato->type=='motorboat'){
     	$modele='motorboat';
 	}
+	else  if ($bato->type=='greatboat'){
+    	$modele='greatboat';
+	}	
 	else{
     	$modele='monocoque';
     }
@@ -439,7 +444,7 @@ $s.='</p>]]>
 
 				if (recopier_modele_complet_dae($dossier_cible, $fichier_dae, GetNomVoile($bato->voile), $bato->type, $bord, $modele)){
 						$s.='			<Link id="'.$bato->nom.'">
-    			<href>'.$url_modeles.'/'.GetNomVoile($bato->voile).'_'.$bord.$modele.'.dae</href>
+    			<href>'.$url_modeles.'/'.GetNomVoile($bato->voile).'_'.$bord.'_'.$modele.'.dae</href>
     		</Link>
 ';
 					}
@@ -652,7 +657,7 @@ global $dossier_modeles;
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae)){
 		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae);
-		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$nom_bato.'_'.$voile.'_'.$bord.$modele.$extension_dae;
+		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$nom_bato.'_'.$voile.'_'.$bord.'_'.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
 			fwrite($fp, $contenu);
@@ -676,7 +681,7 @@ global $dossier_modeles;
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae)){
 		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae);
-		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$voile.'_'.$bord.$modele.$extension_dae;
+		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$voile.'_'.$bord.'_'.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
 			fwrite($fp, $contenu);
@@ -721,7 +726,7 @@ global $dossier_modeles;
 //echo '<br />DEBUG kml_3d.php :: 466 :: recopier_modele_gv_dae <br />'.$dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/gv_'.$bord.'.dae'."\n";
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/gv_'.$bord.$modele.'.dae')){
-		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/gv_'.$bord.$modele.'.dae');
+		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/gv_'.$bord.'_'.$modele.'.dae');
 		$f_name=$dir_serveur.'/'.$dossier_cible.$dossier_modeles.'/'.$nom_bato.'_gv'.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
@@ -746,7 +751,7 @@ global $dossier_modeles;
 
 	if (file_exists($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae)){
 		$contenu=file_get_contents($dir_serveur.'/sources_3d/'.$dossier_modeles.'/'.$dossier_type.'/'.$fichier_dae);
-		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$nom_bato.'_'.$voile.$modele.$extension_dae;
+		$f_name=$dir_serveur.'/'.$dossier_cible.'/'.$dossier_modeles.'/'.$nom_bato.'_'.$voile.'_'.$modele.$extension_dae;
 		$fp = fopen($f_name, 'w');
 		if ($fp){
 			fwrite($fp, $contenu);
@@ -809,6 +814,10 @@ $fichier_kml_cache_3d=$fichier_kml_cache.'3D';
 				copy($f_name_cache, $f_archive);
                 rename($f_name_cache, $dir_serveur.'/'.$dossier_kmz.'/'.$nom_fichier_kmz);
                 rename($f_archive, $dir_serveur.'/'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz);
+				// Suppression
+				// DEBUG
+				//echo "<br />DEBUG : RRMDIR :".$dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d."\n";
+				rrmdir($dir_serveur.'/'.$dossier_kml.'/'.$dossier_3d);
 
 				if ($al){
 					echo '<br />'.$al->get_string('file_updated').' <a href="'.$dossier_kmz.'/'.$fichier_kml_cache_3d.$extension_kmz.'"><b>'.$fichier_kml_cache_3d.$extension_kmz.'</b></a>'."\n";
@@ -979,7 +988,7 @@ global $extension_kmz;
 </kml>
 ';
 	// enregistrer ce ficher
-	$fp_data = fopen($fichier_kml_courant.$extension_kml, 'w');
+	$fp_data = fopen($dossier_kml.'/'.$fichier_kml_courant.$extension_kml, 'w');
 	if ($fp_data ){
 		fwrite($fp_data, $s);
 		fclose($fp_data);

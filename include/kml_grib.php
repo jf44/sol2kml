@@ -342,9 +342,10 @@ global $dossier_textures;
 		fwrite($fp_data, $contenu);
 		fclose($fp_data);
 	}
-
 	if ($archive){
-		// faire une copie zippee du  dossier $dossier_grib 
+		// faire une copie zippee du  dossier $dossier_grib
+		// if (creer_fichier_zip($dir_serveur, $dossier_grib, $fichier_kml_cache_grib)){
+			// if (creer_fichier_zip('', $dossier_grib, $fichier_kml_cache_grib)){
 		$t_fichiers=array();
 		$t_fichiers[0]=$dossier_kml.'/'.$dossier_grib.'/'.$fichier_kml_cache_grib.$extension_kml;
 		$t_fichiers[1]=$dossier_kml.'/'.$dossier_grib.'/'.$dossier_modeles;
@@ -352,25 +353,36 @@ global $dossier_textures;
 
 		if (creer_fichier_zip($dossier_kml.'/'.$dossier_grib, $t_fichiers, $fichier_kml_cache_grib)){
 			// puis le renommer .kmz
+            //echo "<br>DEBUG :: FICHIER_CACHE_GRIB :: $fichier_kml_cache_grib\n";
+			//exit;
 			$nom_fichier_kmz=renommer_fichier($fichier_kml_cache_grib, $extension_kmz);
 			// DEBUG
-			//echo "<br>DEBUG :: kml_grib.php :: 357 :: $nom_fichier_kmz\n";
+			//echo "<br>DEBUG :: kml_grib.php :: 358 :: $nom_fichier_kmz\n";
 			if ($nom_fichier_kmz!=''){
 				// creer un fichier d'archive
-				// le nom du fichier d'archive recoit une date+heure qui sera utilisee 
+				// le nom du fichier d'archive recoit une date+heure qui sera utilisee
 				// pour verifier si le delai depuis la génération précédente est suffisant
 				$f_name_cache=$dir_serveur.'/'.$nom_fichier_kmz;
+                //echo "<br>DEBUG :: F_NAME_CACHE :: $f_name_cache\n";
 				$f_archive=$dir_serveur.'/'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz;
+                //echo "<br>DEBUG :: F_ARCHIVE :: $f_archive\n";
+
 				copy($f_name_cache, $f_archive);
                 rename($f_name_cache, $dir_serveur.'/'.$dossier_kmz.'/'.$nom_fichier_kmz);
+                rename($f_archive, $dir_serveur.'/'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz);
+				// Suppression
+				// DEBUG
+				//echo "<br />DEBUG : RRMDIR :".$dir_serveur.'/'.$dossier_kml.'/'.$dossier_grib.'_'.date('YmdH')."\n";
+				//exit;
+				rrmdir($dir_serveur.'/'.$dossier_kml.'/'.$dossier_grib.'_'.date('YmdH'));
 
-  				if ($al){
-					echo $al->get_string('file_updated').' <a href="'.$dossier_kmz.'/'.$fichier_kml_cache_grib.$extension_kmz.'"><b>'.$fichier_kml_cache_grib.$extension_kmz.'</b></a>'."\n";
+				if ($al){
+					echo '<br />'.$al->get_string('file_updated').' <a href="'.$dossier_kmz.'/'.$fichier_kml_cache_grib.$extension_kmz.'"><b>'.$fichier_kml_cache_grib.$extension_kmz.'</b></a>'."\n";
         			echo '<br />'.$al->get_string('file_zip').' <a href="'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'"><b>'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'</b></a>'."\n";
 				}
 				else{
-					echo 'File updated: <a href="'.$dossier_kmz.'/'.$fichier_kml_cache_grib.$extension_kmz.'"><b>'.$fichier_kml_cache_grib.$extension_kmz.'</b></a>'."\n";
-					echo '<br />File zipped: <a href="'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'"><b>'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'</b></a>'."\n";
+					echo '<br />Updated File: <a href="'.$dossier_kmz.'/'.$fichier_kml_cache_grib.$extension_kmz.'"><b>'.$fichier_kml_cache_grib.$extension_kmz.'</b></a>'."\n";
+					echo '<br />Zipped File: <a href="'.$dossier_kmz.'/'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'"><b>'.nom_fichier($nom_fichier_kmz).date('YmdH').$extension_kmz.'</b></a>'."\n";
 				}
 			}
 		}
@@ -510,7 +522,7 @@ return $s;
 
 
 // --------------------
-function GenereKML_Barb($dossier_grib, $url_serveur){
+function GenereKML_Grib($dossier_grib, $url_serveur){
 // génere le fichier courant à charger dans Google Earth
 
 global $dir_serveur;
@@ -519,7 +531,7 @@ global $fichier_kml_courant;
 global $fichier_kml_cache;
 global $extension_kml;
 global $extension_kmz;
-$fichier_kml_cache_grib=$fichier_kml_cache.'grib';
+$fichier_kml_cache_grib=$fichier_kml_cache.'Grib';
 
 	$s='<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
@@ -537,7 +549,7 @@ $fichier_kml_cache_grib=$fichier_kml_cache.'grib';
 </kml>
 ';
 	// enregistrer ce ficher
-	$fp_data = fopen($fichier_kml_courant.$extension_kml, 'w');
+	$fp_data = fopen($dossier_kml.'/'.$fichier_kml_courant.$extension_kml, 'w');
 	if ($fp_data ){
 		fwrite($fp_data, $s);
 		fclose($fp_data);

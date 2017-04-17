@@ -2,7 +2,9 @@
 // JF 2009
 
 // DEFINITION D'UN CLASSE VOILIER d'après MP
-// V 1.2 : intégration de la trajectoire au modèle
+// V 1.3 : intégration de la trajectoire au modèle
+// couleurs des voiles par methode autonome.
+// A adapter au type de données enregistrées sur les serveurs de courses virtuelles
 
 // -----------------------------------
 // la classe Coordonnees 
@@ -121,6 +123,57 @@ class Voilier{
 		return $this->couleur_genak;
 	}
 
+
+		
+	// -----------------------------------------------
+	function SetColors3RGB($color_R, $color_G, $color_B){
+	// SailOnLine version
+		$this->couleur_coque = $color_R.';'.$color_G.';'.$color_B; // hull RRR;VVV;BBB decimal 0-255
+		$this->couleur_pont= $color_G.';'.$color_B.';'.$color_R; // deck
+		$this->couleur_gv = $color_B.';'.$color_R.';'.$color_G; // Main sail Grand'voile
+		$this->couleur_vav = $color_R.';'.$color_B.';'.$color_G; // Jub or Genois VoileAvant
+		$this->couleur_spi = $color_G.';'.$color_R.';'.$color_B;// Spi
+		$this->couleur_genak= $color_B.';'.$color_G.';'.$color_R; // Gennaker ; Spi 2
+	
+	// Pour les bateaux en 2D
+		$this->couleur1=$this->UneCouleur($this->couleur_coque);
+		$this->couleur2=$this->UneCouleur($this->couleur_pont);
+		$this->couleur3=$this->UneCouleur($this->couleur_gv);
+		$this->couleur4=$this->UneCouleur($this->couleur_vav);		
+	}
+
+	//-------------------------
+	function hexa2_3dec($hexa){
+		// rrvvbb -> hexdec(rr);hexdec(vv);hexdec(bb)
+		if (list($rr, $vv, $bb) = explode(';', chunk_split ($hexa,2,';'))){
+			return (hexdec($rr).';'.hexdec($vv).';'.hexdec($bb));
+		}
+		return false;
+	}
+
+	//-----------------------------------
+	function SetColors4HexaToDec($hcolor){
+	// Virtual Regatta version
+	// Input: $hcolor  	= "coque,voile,foc,spi" coque:ffffff,voile:ffff33,foc:ffffff,spi:ee33ef
+	// Output: $voilier->une_couleur_par_element au format RRR;VVV;BBB entre 0 et 255
+		if ($hcouleur){
+			list($ccoque, $cvoile, $cfoc, $cspi) = explode(',', $hcolor);
+			$this->couleur_coque = $this->hexa2_3dec($ccoque);
+			$this->couleur_pont = $this->hexa2_3dec($cpont);
+			$this->couleur_vav = $this->hexa2_3dec($cfoc);
+			$this->couleur_gv = $this->hexa2_3dec($cvoile);
+			$this->couleur_spi = $this->hexa2_3dec($cspi);
+			$this->couleur_genak = $this->hexa2_3dec($cgenak);	
+
+			// Pour les bateaux en 2D
+			$this->couleur1=$this->UneCouleur($this->couleur_coque);
+			$this->couleur2=$this->UneCouleur($this->couleur_pont);
+			$this->couleur3=$this->UneCouleur($this->couleur_gv);
+			$this->couleur4=$this->UneCouleur($this->couleur_vav);					
+		}
+	}
+	
+	
 	// -----------------------------------------------
 	function SetVoile(){
 		if (!isset($this->twa) || !isset($this->tws)){
@@ -237,7 +290,6 @@ class Voilier{
 							$navstatus,
 							$voile=0,
                             $twd, $tws, $twa,
-							$couleur1, $couleur2, $couleur3, $couleur4, $couleur5, $couleur6,
 							$classement=0, $dtg=0, $dbl=0, $log=0, $current_leg=0, $type='monocoque'){
 
         $this->type=$type;  // type ==  monocoque || catamaran || trimaran || motorboat
@@ -255,17 +307,6 @@ class Voilier{
 		$this->twd=$twd;
         $this->tws=$tws;
 		$this->twa=$twa;
-		$this->couleur_coque=$couleur1;
-		$this->couleur_vav=$couleur2;
-		$this->couleur_gv=$couleur3;
-		$this->couleur_spi=$couleur4;
-        $this->couleur_genak=$couleur5;
-        $this->couleur_pont=$couleur6;
-// Pour les bateaux en 2D
-		$this->couleur1=$this->UneCouleur($couleur1);
-		$this->couleur2=$this->UneCouleur($couleur2);
-		$this->couleur3=$this->UneCouleur($couleur3);
-		$this->couleur4=$this->UneCouleur($couleur4);
 		$this->classement=$classement;
         $this->dtg=$dtg;
         $this->dtg=$dbl;

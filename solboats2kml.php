@@ -668,6 +668,7 @@ if ($action==$al->get_string('validate')){
 
 					// Fabriquer le voilier
                 	$un_voilier= new Voilier();
+					$un_voilier->setColors3RGB($aboat_xml->color_R, $aboat_xml->color_G, $aboat_xml->color_B);
 					$un_voilier->SetPosition(
                             $aboat_xml->mmsi,     // mmsi
 							$aboat_xml->name,
@@ -679,17 +680,11 @@ if ($action==$al->get_string('validate')){
 							$aboat_xml->cog,
 							$aboat_xml->sog,                        // SOG
                             $aboat_xml->navstatus,
-							$aboat_xml->voile,	// Foc=1, Spi=2, c'est das la classe voilier que la voile est calculée en focntion de twa, tws.
+							$aboat_xml->voile,	// Foc=1, Spi=2, c'est dans la classe voilier que la voile est calculée en fonction de twa, tws.
 							// On pourrait implanter en fonction des polaires...
 							$aboat_xml->twd,                          // TWd
 							$aboat_xml->tws,                          // TWS
 							$aboat_xml->twa,                          // TWA
-							$aboat_xml->color_R.';'.$aboat_xml->color_G.';'.$aboat_xml->color_B,   // RRR;VVV;BBB
-							$aboat_xml->color_G.';'.$aboat_xml->color_B.';'.$aboat_xml->color_R,
-       						$aboat_xml->color_B.';'.$aboat_xml->color_R.';'.$aboat_xml->color_G,
-							$aboat_xml->color_R.';'.$aboat_xml->color_B.';'.$aboat_xml->color_G,
-							$aboat_xml->color_G.';'.$aboat_xml->color_R.';'.$aboat_xml->color_B,
-                            $aboat_xml->color_B.';'.$aboat_xml->color_G.';'.$aboat_xml->color_R,
                             $aboat_xml->ranking,
 							$aboat_xml->dtg, // distance à courir
     						$aboat_xml->dbl,   // distance au premier
@@ -1074,44 +1069,6 @@ global $al;
         echo '<li>'.$al->get_string('log').': '.$aBoat->log.''."\n";
         echo '</ul><br /></li>'."\n";
 	}
-}
-
-
-
-
-
-//-----------------------------------
-function SetCouleurVoilierHexa2Dec($bcouleur){
-	// $boat->couleur  	= "coque,voile,foc,spi" coque:ffffff,voile:ffff33,foc:ffffff,spi:ee33ef
-	// $voilier->une_couleur_par_element au formar RRR;VVV;BBB entre 0 et 255
-	$tcol_v = new stdClass();
-	$tcol_v->couleur_coque=255; // coque    RRR;VVV;BBB
-    $tcol_v->couleur_pont=255; // coque    RRR;VVV;BBB
-	$tcol_v->couleur_vav=255; // GV
-	$tcol_v->couleur_gv=255; // VoileAvant
-	$tcol_v->couleur_spi=255; // Spi
-	$tcol_v->couleur_genak=255; // Spi 2
-
-    if ($bcouleur){
-		list($ccoque, $cvoile, $cfoc, $cspi) = explode(',', $bcouleur);
-           $tcol_v->couleur_coque = hexa2_3dec($ccoque);
-           $tcol_v->couleur_pont = hexa2_3dec($cpont);
-           $tcol_v->couleur_vav = hexa2_3dec($cfoc);
-           $tcol_v->couleur_gv = hexa2_3dec($cvoile);
-           $tcol_v->couleur_spi = hexa2_3dec($cspi);
-           $tcol_v->couleur_genak = hexa2_3dec($cgenak);
-	}
-
-	return ($tcol_v);
-}
-
-//-------------------------
-function hexa2_3dec($hexa){
-	// rrvvbb -> hexdec(rr);hexdec(vv);hexdec(bb)
-    if (list($rr, $vv, $bb) = explode(';', chunk_split ($hexa,2,';'))){
-		return (hexdec($rr).';'.hexdec($vv).';'.hexdec($bb));
-	}
-	return false;
 }
 
 
@@ -1576,7 +1533,7 @@ var tjkml = new Array();
 		        rsort($data->tikml);
 				$j=0;
 				while (list($key) = each($data->tikml)) {
-					echo 'tjkml['.$j.'] = "<a  class=\"small\" href=\"'.$path.$sep.$data->tikml[$key].'\">'.$data->tikml[$key].'</a>  &nbsp; &nbsp; &nbsp; ";'."\n";
+					echo 'tjkml['.$j.'] = "<a  class=\"small\" href=\"'.$path.$sep.$dossier_kml.$sep.$data->tikml[$key].'\">'.$data->tikml[$key].'</a>  &nbsp; &nbsp; &nbsp; ";'."\n";
 					$j++;
     			}
 			}
@@ -1641,7 +1598,7 @@ var tjkmz = new Array();
 				$j=0;
 				while (list($key) = each($data->tikmz)) {
 		        	//echo '<a  class="small" href="'.$path.$sep.$key.'">'.$tikmz[$key].'</a>  &nbsp; &nbsp; &nbsp; '."\n";
-					echo 'tjkmz['.$j.'] = "<a  class=\"small\" href=\"'.$path.$sep.$data->tikmz[$key].'\">'.$data->tikmz[$key].'</a>  &nbsp; &nbsp; &nbsp; ";'."\n";
+					echo 'tjkmz['.$j.'] = "<a  class=\"small\" href=\"'.$path.$sep.$dossier_kmz.$sep.$data->tikmz[$key].'\">'.$data->tikmz[$key].'</a>  &nbsp; &nbsp; &nbsp; ";'."\n";
 					$j++;
     			}
 			}

@@ -489,14 +489,313 @@ if (!empty($t_barbule)){
 		}
 		$s.=GenereEnQueueKML_Grib();
 		EnregistreKML_Grib($dossier_grib, $s, $archive, $al);
+        GenereKML_Grib($dossier_grib, $url_serveur); // Fichier kml a appeler depuis GoogleEarth
+
   		echo '<br />'.$al->get_string('export2')."\n";
 		unset($t_barbule);
 	}
 }
 
+// afficheArchivesKML();
+if ($datatodisplay=verifieArchivesKML()){
+	echo '<p><span class="small">'.$al->get_string('info1').'<br /><i>'.$al->get_string('info2').'</i></span></p>'."\n";
+
+	echo '
+<h4>'.$al->get_string('mapready').'</h4>
+';
+
+    displayArchivesKML($datatodisplay);
+	if ($datatodisplay->nkml){
+		echo '
+<button id="rollButtonkml" type="button" onclick="rollKml()">++KML</button>
+';
+		echo '<div id="divkml">
+<script type="text/javascript">
+displayPagekml();
+</script>
+</div>
+';
+	}
+
+	if ($datatodisplay->nkmz){
+		echo '
+<button id="rollButtonkmz" type="button" onclick="rollKmz()">++KMZ</button>
+';
+		echo '<div id="divkmz">
+<script type="text/javascript">
+displayPagekmz();
+</script>
+</div>
+';
+	}
+}
+
+
 echo '</div>
 ';
 enqueue();
+
+
+// ------------------
+function verifieArchivesKML(){
+
+global $dossier_kml;
+global $extension_kml;
+global $dossier_kmz;
+global $extension_kmz;
+global $al;
+
+// DEBUG
+// echo "<br>Fichier KML courant : $fichier_kml_courant\n";
+	$tikml=array();
+	$tikmz=array();
+	$traceskml=array();
+	$traceskmz=array();
+	$sep = '/';
+    $nobj = 0;
+    $nkml = 0;
+	$nkmz = 0;
+	$ndir = 0;
+
+	$path = './'.$dossier_kml;
+	$h1=opendir($path);
+
+    while ($f = readdir($h1) )
+    {
+		if (($f != ".") && ($f != "..")) {
+			// Les fichiers commençant par '_' ne sont pas affichés
+			// Ni le fichier par defaut ni le fichier de cache ne sont affichés
+			// Les fichiers ne commençant pas par le nom par defaut ne sont pas affichés
+			// les fichier n'ayant pas la bonne extension ne sont pas affichés
+	        if (!is_dir($path.$sep.$f)){
+				// KML
+    	       	$g= eregi_replace($extension_kml,"",$f) ;
+				// DEBUG
+				// echo "<br>g:$g  g+:$g$extension_kml  f:$f\n ";
+        	  	if (
+/*
+					(strtoupper($g) != strtoupper($fichier_kml_courant)) // le fichier par defaut n'est pas affiché
+					&&
+					(strtoupper($g) != strtoupper($fichier_kml_cache)) // le fichier de cache n'est pas affiché
+					&&
+					(substr($g,0,1) == substr($fichier_kml_courant,0,1)) // Les fichiers ne commençant pas par le nom par defaut ne sont pas affichés
+					&&
+*/
+					(substr($g,0,1) != "_") // Les fichiers commençant par '_' ne sont pas affichés
+					&&
+					(strtoupper($g.$extension_kml) == strtoupper($f)) // les fichier n'ayant pas la bonne extension ne sont pas affichés
+				) {
+            	   	$nobj ++;
+               		$nkml ++;
+	               	$tikml[$f] = $f ;
+				}
+			} // fin traitement d'un fichier
+		} // fin du test sur entrees speciales . et ..
+	}  // fin du while sur les entrees du repertoire traite
+
+	closedir($h1);
+
+    $path = './'.$dossier_kmz;
+ 	$h2=opendir($path);
+
+    while ($f = readdir($h2) )
+    {
+		if (($f != ".") && ($f != "..")) {
+			// Les fichiers commençant par '_' ne sont pas affichés
+			// Ni le fichier par defaut ni le fichier de cache ne sont affichés
+			// Les fichiers ne commençant pas par le nom par defaut ne sont pas affichés
+			// les fichier n'ayant pas la bonne extension ne sont pas affichés
+	        if (!is_dir($path.$sep.$f)){
+				// KML
+    	       	$g= eregi_replace($extension_kmz,"",$f) ;
+				// DEBUG
+				// echo "<br>g:$g  g+:$g$extension_kml  f:$f\n ";
+        	  	if (
+/*
+					(strtoupper($g) != strtoupper($fichier_kml_courant)) // le fichier par defaut n'est pas affiché
+					&&
+					(strtoupper($g) != strtoupper($fichier_kml_cache)) // le fichier de cache n'est pas affiché
+					&&
+					(substr($g,0,1) == substr($fichier_kml_courant,0,1)) // Les fichiers ne commençant pas par le nom par defaut ne sont pas affichés
+					&&
+*/
+					(substr($g,0,1) != "_") // Les fichiers commençant par '_' ne sont pas affichés
+					&&
+					(strtoupper($g.$extension_kmz) == strtoupper($f)) // les fichier n'ayant pas la bonne extension ne sont pas affichés
+				) {
+            	   	$nobj ++;
+               		$nkmz ++;
+	               	$tikmz[$f] = $f ;
+				}
+			} // fin traitement d'un fichier
+		} // fin du test sur entrees speciales . et ..
+	}  // fin du while sur les entrees du repertoire traite
+
+	closedir($h2);
+
+	if ($nobj>0){
+		$data = new stdClass();
+        $data->nkml = $nkml;
+        $data->tikml = $tikml;
+        $data->nkmz = $nkmz;
+        $data->tikmz = $tikmz;
+        return $data;
+	}
+
+	return NULL;
+
+}
+
+//-------------------
+function displayArchivesKML($data){
+global $dossier_kml;
+global $extension_kml;
+global $dossier_kmz;
+global $extension_kmz;
+global $al;
+
+$sep = '/';
+$path = '.';
+
+	if (!empty($data) && isset($data->nkml) && isset($data->nkmz)){
+
+ 		if (($data->nkml > 0) || ($data->nkmz > 0)){
+			// Javascript
+        	echo '<script type="text/javascript">'."\n";
+			echo '
+// Display KML files
+var indexkml = 0;
+var tjkml = new Array();
+';
+
+			if ( $data->nkml > 0){
+            	//echo '<b>'.$al->get_string('kmlfile').'</b><br />'."\n";
+		        rsort($data->tikml);
+				$j=0;
+				while (list($key) = each($data->tikml)) {
+					echo 'tjkml['.$j.'] = "<a  class=\"small\" href=\"'.$path.$sep.$dossier_kml.$sep.$data->tikml[$key].'\">'.$data->tikml[$key].'</a>  &nbsp; &nbsp; &nbsp; ";'."\n";
+					$j++;
+    			}
+			}
+
+			// fonctions
+			echo '
+function displayPagekml() {
+	var skml = \'\';
+	if ( tjkml.length< 20){
+   		for (i=0;i<tjkml.length;i++){
+			skml+= tjkml[i] + " ";
+		}
+	}
+	else{
+		var $aff =  Math.min (indexkml+20, tjkml.length);
+		var aff2 =  Math.min (20 - ($aff - indexkml), tjkml.length);
+        for (i=indexkml;i<$aff;i++){
+			skml+= tjkml[i] + " ";
+		}
+        //skml+= \'<br>\'+aff2+\'<br>\';
+		if (aff2>0){
+        	for (i=0;i<aff2;i++){
+				skml+= tjkml[i] + " ";
+			}
+		}
+	}
+	document.getElementById(\'divkml\').innerHTML=skml;
+}
+';
+
+			echo '
+function rollKml() {
+    indexkml=++indexkml  % tjkml.length;  // pre-increment is better
+    displayPagekml();
+}
+';
+
+            echo '
+// Display KMZ files
+var indexkmz = 0;
+var trkmz = new Array();
+var tjkmz = new Array();
+
+';
+			if ( $data->nkmz > 0){
+				//echo '<br /><br /><b>'.$al->get_string('kmzfile').'</b><br />'."\n";
+		        rsort($data->tikmz);
+				// Lister les courses
+				/*
+				$j=0;
+				$k=0;
+				while (list($key) = each($tikmz)) {
+					if ($race=substr($tikmz[$key],0,strpos($tikmz[$key],'_')) !== false) {
+						if (!isset($traceskmz[$race])){
+                            $traceskmz[$race]=$race;
+							echo '$t_rkmz['.$k.'] = "'.$race.'";';
+							$k++;
+						}
+					}
+				}
+				*/
+				$j=0;
+				while (list($key) = each($data->tikmz)) {
+		        	//echo '<a  class="small" href="'.$path.$sep.$key.'">'.$tikmz[$key].'</a>  &nbsp; &nbsp; &nbsp; '."\n";
+					echo 'tjkmz['.$j.'] = "<a  class=\"small\" href=\"'.$path.$sep.$dossier_kmz.$sep.$data->tikmz[$key].'\">'.$data->tikmz[$key].'</a>  &nbsp; &nbsp; &nbsp; ";'."\n";
+					$j++;
+    			}
+			}
+			// fonctions
+  			echo '
+function displayRacekmz() {
+	var rkmz = \'\';
+	for (i=0;i<trkmz.length;i++){
+		rkmz+= trkmz[i] + " ";
+	}
+    document.getElementById(\'divrkmz\').innerHTML=rkmz;
+}
+
+function displayPagekmz() {
+	var skmz = \'\';
+	if ( tjkmz.length< 20){
+   		for (i=0;i<tjkmz.length;i++){
+			skmz+= tjkmz[i] + " ";
+		}
+	}
+	else{
+		var $aff =  Math.min (indexkmz+20, tjkmz.length);
+		var aff2 =  Math.min (20 - ($aff - indexkmz), tjkmz.length);
+        for (i=indexkmz;i<$aff;i++){
+			skmz+= tjkmz[i] + " ";
+		}
+        //skmz+= \'<br>\'+aff2+\'<br>\';
+		if (aff2>0){
+        	for (i=0;i<aff2;i++){
+				skmz+= tjkmz[i] + " ";
+			}
+		}
+	}
+	document.getElementById(\'divkmz\').innerHTML=skmz;
+}
+';
+
+			echo '
+var rollKmz = function () {
+    indexkmz=(indexkmz+3)  % tjkmz.length;  // pre-increment is better
+    displayPagekmz();
+}
+';
+/*
+            echo '
+//when the user presses the button it will display  the array
+    document.getElementById(\'rollButtonkmz\').addEventListener(\'click\', rollKmz());
+';
+*/
+			echo '</script>'."\n";
+		}
+	}
+	else{
+        echo '<p>'.$al->get_string('nofilekml').'</p>'."\n";
+	}
+
+}
 
 
 
@@ -1023,7 +1322,6 @@ displayPage();
 }
 
 
-
 //------------------------
 function creer_dossier_kml($archive=false){
 // Crée un dossier unique pour archiver les donnees KML
@@ -1047,25 +1345,24 @@ global $dossier_modeles;
 	if (!file_exists($dir_name)){
 		mkdir($dir_name);
 	}
-    recopier_windbar($dossier_kml.'/'.$dossier_grib);
 
 	if ($archive){
 		$dossier_grib_cache=$dossier_grib.'_'.date("YmdH");
-		$dir_name=$dir_serveur.'/'.$dossier_kmz.'/'.$dossier_grib_cache;
+		$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_grib_cache;
 		if (!file_exists($dir_name)){
 			mkdir($dir_name);
 		}
-		$dir_name=$dir_serveur.'/'.$dossier_kmz.'/'.$dossier_grib_cache.'/'.$dossier_modeles;
+		$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_grib_cache.'/'.$dossier_modeles;
 		if (!file_exists($dir_name)){
 			mkdir($dir_name);
 		}
-		$dir_name=$dir_serveur.'/'.$dossier_kmz.'/'.$dossier_grib_cache.'/'.$dossier_textures;
+		$dir_name=$dir_serveur.'/'.$dossier_kml.'/'.$dossier_grib_cache.'/'.$dossier_textures;
 		if (!file_exists($dir_name)){
 			mkdir($dir_name);
-            recopier_windbar($dossier_kmz.'/'.$dossier_grib_cache, $archive);
 		}
 	 }
 }
+
 
 
 

@@ -137,5 +137,7 @@ $t_string['home'] ='Home';
 $t_string['file_updated'] ='Updated file: ';
 $t_string['file_zip'] ='Zipped file: ';
 $t_string['teaser'] ='Test our tools and get pictures of your boats in G.E.';
+$t_string['help1'] ='Select a race, a scale and a boat type then click on the yellow "Validate"!';
+$t_string['archives'] ='Archives';
 
 ?>

@@ -11,17 +11,17 @@ global $token;
 	// echo " '$phpscript' ";
 	if (!empty($phpscript)){
 		switch ($phpscript)  {
-			case 'sol_my_boat.php' :
-				echo '  <a href="index.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">'.$al->get_string('home').'</a> -  <b>SolMyBoat</b> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+			case 'login.php' :
+				echo '  <a href="../../soltools/index.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">'.$al->get_string('home').'</a> -  <b>Login</b> - <a href="../../soltools/solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="../../soltools/solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
 			break;
 			case 'solboats2kml.php' :
-				echo '  <a href="index.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">'.$al->get_string('home').'</a> - <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <b>SolBoatsToKml</b> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+				echo '  <a href="../../soltools/index.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">'.$al->get_string('home').'</a> - <a href="server/login.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <b>SolBoatsToKml</b> - <a href="../../soltools/solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
 			break;
             case 'solgrib2kml.php' :
-            	echo '  <a href="index.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">'.$al->get_string('home').'</a> - <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <b>SolToGrib</b>'."\n";
+            	echo '  <a href="../../soltools/index.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">'.$al->get_string('home').'</a> - <a href="../../soltools/sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="../../soltools/solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <b>SolToGrib</b>'."\n";
             break;
 			default :
-            	echo '  <b>'.$al->get_string('home').'</b> - <a href="sol_my_boat.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
+            	echo '  <b>'.$al->get_string('home').'</b> - <a href="server/login.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolMyBoat</a> - <a href="../../soltools/solboats2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolBoatsToKml</a> - <a href="../soltools/solgrib2kml.php?lang='.$lang.'&racenumber='.$racenumber.'&token='.$token.'">SolToGrib</a>'."\n";
 			break;
 		}
 	}
@@ -58,5 +58,25 @@ function get_url_pere($path) {
 }
 
 
+// ----------------------------
+// Recursive rmdir
+// http://fr.php.net/manual/fr/function.rmdir.php
+// From itay@itgoldman.com
+function rrmdir($src) {
+    $dir = opendir($src);
+    while(false !== ( $file = readdir($dir)) ) {
+        if (( $file != '.' ) && ( $file != '..' )) {
+            $full = $src . '/' . $file;
+            if ( is_dir($full) ) {
+                rrmdir($full);
+            }
+            else {
+                unlink($full);
+            }
+        }
+    }
+    closedir($dir);
+    rmdir($src);
+}
 
 ?>
