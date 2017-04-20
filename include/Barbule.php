@@ -10,7 +10,7 @@ $t_couleurs = ['ffffff','0000dd','0000ff', '00aa00','00dd00','00ff00','ffaa00','
 
 
 // -----------------------------------
-// la classe Barbules (flesches de vent)
+// la classe Barbules (fleches de vent)
 class Barbule{
 	var $id;
 	var $longitude;
